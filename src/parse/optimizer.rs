@@ -24,36 +24,36 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     while let Some(op) = p.next() {
         match op {
             OpCodes::Add(x) => {
-                let mut counter = *x;
+                let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter += 1;
+                    counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Add(counter));
+                new_ast.push(OpCodes::Add(counter as u8));
             }
             OpCodes::Sub(x) => {
-                let mut counter = *x;
+                let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter += 1;
+                    counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Sub(counter));
+                new_ast.push(OpCodes::Sub(counter as u8));
             }
             OpCodes::Inc(x) => {
-                let mut counter = *x;
+                let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter += 1;
+                    counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Inc(counter));
+                new_ast.push(OpCodes::Inc(counter as u8));
             }
             OpCodes::Dec(x) => {
-                let mut counter = *x;
+                let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter += 1;
+                    counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Dec(counter));
+                new_ast.push(OpCodes::Dec(counter as u8));
             }
             OpCodes::Loop(x) => {
                 new_ast.push(OpCodes::Loop(contract(x.to_vec())));

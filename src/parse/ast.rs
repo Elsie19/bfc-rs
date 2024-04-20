@@ -12,7 +12,7 @@ pub fn generate_ast(program: &mut std::str::Chars) -> Vec<OpCodes> {
             ',' => out.push(OpCodes::Input),
             '[' => out.push(OpCodes::Loop(generate_ast(program))),
             ']' => break,
-            _ => continue, /* Comments probably */
+            _ => (), /* Comments probably */
         }
     }
     out
