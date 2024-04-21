@@ -9,7 +9,7 @@ use execute::interpret::interpret;
 use execute::machine::Machine;
 use parse::ast::{balance_brackets, generate_ast};
 use parse::optimizer::{optimize, OptimizerStrategies};
-use reedline::{DefaultPrompt, EditMode, ExampleHighlighter, Reedline, Signal, StyledText};
+use reedline::{DefaultPrompt, Reedline, Signal};
 
 /// bfc is a brainfuck compiler/interpreter
 #[derive(Parser, Debug)]
