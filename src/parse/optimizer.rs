@@ -4,7 +4,6 @@ use crate::parse::opcodes::OpCodes;
 pub enum OptimizerStrategies {
     Contractions,
     ClearLoop,
-    Copy,
 }
 
 pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {

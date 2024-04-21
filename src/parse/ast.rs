@@ -17,22 +17,3 @@ pub fn generate_ast(program: &mut std::str::Chars) -> Vec<OpCodes> {
     }
     out
 }
-
-pub fn to_string_ast(program: Vec<OpCodes>) {
-    for part in program {
-        match part {
-            OpCodes::Add(x) => print!("{:+<1$}", "", x.to_owned().into()),
-            OpCodes::Sub(x) => print!("{:-<1$}", "", x.to_owned().into()),
-            OpCodes::Inc(x) => print!("{:><1$}", "", x.to_owned().into()),
-            OpCodes::Dec(x) => print!("{:<<1$}", "", x.to_owned().into()),
-            OpCodes::Output => print!("."),
-            OpCodes::Input => print!(","),
-            OpCodes::Loop(x) => {
-                print!("[");
-                to_string_ast(x);
-                print!("]");
-            }
-            OpCodes::Clear => continue,
-        }
-    }
-}
