@@ -34,6 +34,7 @@ fn main() {
     let optimizings = vec![
         OptimizerStrategies::Contractions,
         OptimizerStrategies::ClearLoop,
+        OptimizerStrategies::DeadCode,
     ];
     let ast = generate_ast(&mut file_contents);
     let ast = optimize(ast, optimizings);

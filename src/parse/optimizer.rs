@@ -4,6 +4,7 @@ use crate::parse::opcodes::OpCodes;
 pub enum OptimizerStrategies {
     Contractions,
     ClearLoop,
+    DeadCode,
 }
 
 pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
@@ -13,6 +14,9 @@ pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<
     }
     if optimizers.contains(&OptimizerStrategies::ClearLoop) {
         new_ast = clear(new_ast);
+    }
+    if optimizers.contains(&OptimizerStrategies::DeadCode) {
+        new_ast = clear_dead_code(new_ast);
     }
     new_ast
 }
@@ -63,13 +67,38 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     new_ast
 }
 
+fn clear_dead_code(ast: Vec<OpCodes>) -> Vec<OpCodes> {
+    let mut new_ast: Vec<OpCodes> = vec![];
+    for (idx, part) in ast.iter().enumerate() {
+        match part {
+            OpCodes::Loop(x) => {
+                // Remove empty loops `[]`
+                if !x.is_empty() {
+                    new_ast.push(OpCodes::Loop(x.to_vec()));
+                }
+            }
+            OpCodes::Clear => {
+                // Do we have `[+]` or `[-]` at the beginning?
+                if idx != 0 {
+                    // If not, push that mf
+                    new_ast.push(OpCodes::Clear);
+                }
+            }
+            default => new_ast.push(default.clone()),
+        }
+    }
+    new_ast
+}
+
 fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     let mut new_ast: Vec<OpCodes> = vec![];
     for part in ast {
         match part {
             OpCodes::Loop(ref x) => {
+                // Do we have `[x]`
                 if x.len() == 1 {
                     match x.get(0).unwrap() {
+                        // Only match on possible clear values
                         OpCodes::Add(_) | OpCodes::Sub(_) => new_ast.push(OpCodes::Clear),
                         _ => new_ast.push(part),
                     }
