@@ -9,14 +9,14 @@ pub enum OptimizerStrategies {
 
 pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
     let mut new_ast: Vec<OpCodes> = ast.clone();
+    if optimizers.contains(&OptimizerStrategies::DeadCode) {
+        new_ast = clear_dead_code(new_ast);
+    }
     if optimizers.contains(&OptimizerStrategies::Contractions) {
         new_ast = contract(new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::ClearLoop) {
         new_ast = clear(new_ast);
-    }
-    if optimizers.contains(&OptimizerStrategies::DeadCode) {
-        new_ast = clear_dead_code(new_ast);
     }
     new_ast
 }
