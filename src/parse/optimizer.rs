@@ -61,7 +61,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             OpCodes::Loop(x) => {
                 new_ast.push(OpCodes::Loop(contract(x.to_vec())));
             }
-            _ => new_ast.push(op.clone()),
+            _ => new_ast.push(op.to_owned()),
         }
     }
     new_ast
@@ -69,7 +69,10 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
 
 fn clear_dead_code(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     let mut new_ast: Vec<OpCodes> = vec![];
-    for (idx, part) in ast.iter().enumerate() {
+    let mut counter = 0;
+
+    let mut p = ast.iter().peekable();
+    while let Some(part) = p.next() {
         match part {
             OpCodes::Loop(x) => {
                 // Remove empty loops `[]`
@@ -79,13 +82,44 @@ fn clear_dead_code(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             }
             OpCodes::Clear => {
                 // Do we have `[+]` or `[-]` at the beginning?
-                if idx != 0 {
+                if counter != 0 {
                     // If not, push that mf
                     new_ast.push(OpCodes::Clear);
                 }
             }
-            default => new_ast.push(default.clone()),
+            // Ok this will get messy because... reasons, but if we detect opposite tokens next to
+            // each other, we can yoink them
+            OpCodes::Add(x) => {
+                if p.peek().copied() == Some(&OpCodes::Sub(*x)) {
+                    p.next();
+                } else {
+                    new_ast.push(OpCodes::Add(*x));
+                }
+            }
+            OpCodes::Sub(x) => {
+                if p.peek().copied() == Some(&OpCodes::Add(*x)) {
+                    p.next();
+                } else {
+                    new_ast.push(OpCodes::Sub(*x));
+                }
+            }
+            OpCodes::Inc(x) => {
+                if p.peek().copied() == Some(&OpCodes::Dec(*x)) {
+                    p.next();
+                } else {
+                    new_ast.push(OpCodes::Inc(*x));
+                }
+            }
+            OpCodes::Dec(x) => {
+                if p.peek().copied() == Some(&OpCodes::Inc(*x)) {
+                    p.next();
+                } else {
+                    new_ast.push(OpCodes::Dec(*x));
+                }
+            }
+            default => new_ast.push(default.to_owned()),
         }
+        counter += 1;
     }
     new_ast
 }
@@ -106,7 +140,7 @@ fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     new_ast.push(OpCodes::Loop(clear(x.to_vec())));
                 }
             }
-            _ => new_ast.push(part.clone()),
+            _ => new_ast.push(part.to_owned()),
         }
     }
     new_ast
