@@ -54,6 +54,19 @@ fn main() {
             let sig = line_editor.read_line(&prompt);
             match sig {
                 Ok(Signal::Success(buffer)) => {
+                    if buffer.to_lowercase() == "help" {
+                        println!("\n# Brainfuck basics:");
+                        println!("    >  Increment data pointer by one");
+                        println!("    <  Decrement data pointer by one");
+                        println!("    +  Increment byte at data pointer by one");
+                        println!("    -  Decrement byte at data pointer by one");
+                        println!("    .  Output byte at data pointer");
+                        println!("    ,  Accent one byte, store it at the data pointer");
+                        println!("    [  If byte at data pointer is zero, move to ']'");
+                        println!("    ]  If byte at data pointer is nonzero, move to '['");
+                        println!("\n# Example program:");
+                        println!("    ++++++++[>++++[>++>+++>+++>+<<<<-]\n    >+>+>->>+[<]<-]>>.>---.+++++++..++\n    +.>>.<-.<.+++.------.--------.>>+.>++.");
+                    }
                     let ast = optimize(generate_ast(&mut buffer.chars()), optimizings.to_owned());
                     let mut machine = Machine::new(30_000);
                     interpret(&ast, &mut machine);
@@ -68,6 +81,7 @@ fn main() {
             }
         }
     }
+
     let file_contents = fs::read_to_string(args.rest.get(0).unwrap()).expect("Could not read file");
     let mut file_contents = file_contents.chars();
     match balance_brackets(&file_contents) {
@@ -79,6 +93,7 @@ fn main() {
     }
     let ast = generate_ast(&mut file_contents);
     let ast = optimize(ast, optimizings);
+
     if args.compile {
         let machine = Machine::new(30_000);
         let text = compile(&ast, &machine);
