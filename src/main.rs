@@ -10,14 +10,6 @@ use execute::machine::Machine;
 use parse::ast::generate_ast;
 use parse::optimizer::{optimize, OptimizerStrategies};
 
-#[derive(clap::ValueEnum, Clone, Debug)]
-enum OptimizerStrategiesClap {
-    /// Contract
-    Contract,
-    /// Clear
-    Clear,
-}
-
 /// bfc is a brainfuck compiler/interpreter
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None, arg_required_else_help = true)]
