@@ -35,6 +35,7 @@ fn main() {
         OptimizerStrategies::Contractions,
         OptimizerStrategies::ClearLoop,
         OptimizerStrategies::DeadCode,
+        OptimizerStrategies::PureCode,
     ];
     let ast = generate_ast(&mut file_contents);
     let ast = optimize(ast, optimizings);

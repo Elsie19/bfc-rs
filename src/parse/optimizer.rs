@@ -5,6 +5,7 @@ pub enum OptimizerStrategies {
     Contractions,
     ClearLoop,
     DeadCode,
+    PureCode,
 }
 
 pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
@@ -17,6 +18,9 @@ pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<
     }
     if optimizers.contains(&OptimizerStrategies::Contractions) {
         new_ast = contract(new_ast);
+    }
+    if optimizers.contains(&OptimizerStrategies::PureCode) {
+        new_ast = remove_pure(new_ast);
     }
     new_ast
 }
@@ -141,6 +145,24 @@ fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                 }
             }
             _ => new_ast.push(part.to_owned()),
+        }
+    }
+    new_ast
+}
+
+fn remove_pure(ast: Vec<OpCodes>) -> Vec<OpCodes> {
+    let mut new_ast: Vec<OpCodes> = ast.clone();
+    let mut pure_ast: Vec<OpCodes> = vec![];
+    while let Some(op) = new_ast.pop() {
+        match op {
+            // Basically if we have codes at the end that cause side effects, we push that, but if
+            // we don't, we push that to pure_ast instead. Later I might add a warning message
+            // about the no-effect code.
+            OpCodes::Input | OpCodes::Output | OpCodes::Loop { .. } => {
+                new_ast.push(op);
+                break;
+            }
+            _ => pure_ast.push(op),
         }
     }
     new_ast
