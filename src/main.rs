@@ -1,10 +1,13 @@
 mod execute;
 mod parse;
 
-use std::fs;
+use std::fs::{self, File};
+use std::io::Write;
 use std::path::PathBuf;
+use std::process::Command;
 
 use clap::Parser;
+use execute::compile::compile;
 use execute::interpret::interpret;
 use execute::machine::Machine;
 use parse::ast::{balance_brackets, generate_ast};
@@ -77,7 +80,18 @@ fn main() {
     let ast = generate_ast(&mut file_contents);
     let ast = optimize(ast, optimizings);
     if args.compile {
-        todo!("Make compiling work");
+        let machine = Machine::new(30_000);
+        let text = compile(&ast, &machine);
+        let path = args.rest.get(0).unwrap();
+        let c_file = path.file_stem().unwrap().to_str().unwrap().to_string() + ".c";
+        let compiled_file = path.file_stem().unwrap().to_str().unwrap();
+        let mut output = File::create(&c_file).unwrap();
+        write!(output, "{}", text).unwrap();
+        Command::new("gcc")
+            .args(["-O0", &c_file, "-o", compiled_file])
+            .output()
+            .expect("Could not run 'gcc'");
+        fs::remove_file(&c_file).unwrap();
     } else if args.interpret {
         let mut machine = Machine::new(30_000);
         interpret(&ast, &mut machine);

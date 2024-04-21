@@ -13,6 +13,10 @@ impl Machine {
         }
     }
 
+    pub fn get_size(&self) -> usize {
+        self.tape.len()
+    }
+
     pub fn set_byte(&mut self, num: u8) {
         self.tape[self.ptr] = num;
     }
