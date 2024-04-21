@@ -7,7 +7,7 @@ use std::path::PathBuf;
 use clap::Parser;
 use execute::interpret::interpret;
 use execute::machine::Machine;
-use parse::ast::generate_ast;
+use parse::ast::{balance_brackets, generate_ast};
 use parse::optimizer::{optimize, OptimizerStrategies};
 
 /// bfc is a brainfuck compiler/interpreter
@@ -37,6 +37,13 @@ fn main() {
         OptimizerStrategies::DeadCode,
         OptimizerStrategies::PureCode,
     ];
+    match balance_brackets(&file_contents) {
+        Err(nar) => {
+            eprintln!("{}", nar);
+            std::process::exit(1);
+        }
+        _ => (),
+    }
     let ast = generate_ast(&mut file_contents);
     let ast = optimize(ast, optimizings);
 
