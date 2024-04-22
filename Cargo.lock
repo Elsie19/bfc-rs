@@ -83,6 +83,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "qbe",
  "reedline",
 ]
 
@@ -385,6 +386,11 @@ checksum = "3d1597b0c024618f09a9c3b8655b7e430397a36d23fdafec26d6965e9eec3eba"
 dependencies = [
  "unicode-ident",
 ]
+
+[[package]]
+name = "qbe"
+version = "2.1.0"
+source = "git+https://github.com/Elsie19/qbe-rs.git?branch=main#5603f453f9784dbafffe3a3f1d264b11657c9590"
 
 [[package]]
 name = "quote"
