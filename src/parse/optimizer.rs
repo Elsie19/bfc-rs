@@ -91,34 +91,14 @@ fn clear_dead_code(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     new_ast.push(OpCodes::Clear);
                 }
             }
-            // Ok this will get messy because... reasons, but if we detect opposite tokens next to
-            // each other, we can yoink them
-            OpCodes::Add(x) => {
-                if p.peek().copied() == Some(&OpCodes::Sub(*x)) {
+            enummy @ OpCodes::Add(_)
+            | enummy @ OpCodes::Sub(_)
+            | enummy @ OpCodes::Inc(_)
+            | enummy @ OpCodes::Dec(_) => {
+                if p.peek().copied() == enummy.opposite().as_ref() {
                     p.next();
                 } else {
-                    new_ast.push(OpCodes::Add(*x));
-                }
-            }
-            OpCodes::Sub(x) => {
-                if p.peek().copied() == Some(&OpCodes::Add(*x)) {
-                    p.next();
-                } else {
-                    new_ast.push(OpCodes::Sub(*x));
-                }
-            }
-            OpCodes::Inc(x) => {
-                if p.peek().copied() == Some(&OpCodes::Dec(*x)) {
-                    p.next();
-                } else {
-                    new_ast.push(OpCodes::Inc(*x));
-                }
-            }
-            OpCodes::Dec(x) => {
-                if p.peek().copied() == Some(&OpCodes::Inc(*x)) {
-                    p.next();
-                } else {
-                    new_ast.push(OpCodes::Dec(*x));
+                    new_ast.push(enummy.to_owned());
                 }
             }
             default => new_ast.push(default.to_owned()),

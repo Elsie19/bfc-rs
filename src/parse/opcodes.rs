@@ -48,3 +48,15 @@ impl fmt::Display for OpCodes {
         Ok(())
     }
 }
+
+impl OpCodes {
+    pub fn opposite(&self) -> Option<Self> {
+        match self {
+            OpCodes::Add(x) => Some(OpCodes::Sub(*x)),
+            OpCodes::Sub(x) => Some(OpCodes::Add(*x)),
+            OpCodes::Inc(x) => Some(OpCodes::Dec(*x)),
+            OpCodes::Dec(x) => Some(OpCodes::Inc(*x)),
+            _ => None,
+        }
+    }
+}
