@@ -220,7 +220,19 @@ fn generate_qbe(
                 func.add_instr(Instr::Jmp(format_label(returned_while)));
                 func.add_block(format_label(returned_while + 2));
             }
-            OpCodes::Clear => {}
+            OpCodes::Clear => {
+                func.assign_instr(
+                    Value::Temporary(format_counter(*counter + 1)),
+                    Type::Long,
+                    Instr::Load(Type::Long, Value::Temporary(format_counter(1))),
+                );
+                func.add_instr(Instr::Store(
+                    Type::Byte,
+                    Value::Temporary(format_counter(*counter + 1)),
+                    Value::Const(0),
+                ));
+                *counter += 2;
+            }
         }
     }
 }
