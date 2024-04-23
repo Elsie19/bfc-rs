@@ -390,7 +390,7 @@ dependencies = [
 [[package]]
 name = "qbe"
 version = "2.1.0"
-source = "git+https://github.com/Elsie19/qbe-rs.git?branch=main#5603f453f9784dbafffe3a3f1d264b11657c9590"
+source = "git+https://github.com/Elsie19/qbe-rs.git?branch=main#8498ab4359d5e5f9374b9543853f56c20b96415c"
 
 [[package]]
 name = "quote"
@@ -432,9 +432,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.38.33"
+version = "0.38.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e3cc72858054fcff6d7dea32df2aeaee6a7c24227366d7ea429aada2f26b16ad"
+checksum = "70dc5ec042f7a43c4a73241207cecc9873a06d45debb38b329f8541d85c2730f"
 dependencies = [
  "bitflags 2.5.0",
  "errno",

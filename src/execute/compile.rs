@@ -10,6 +10,8 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) {
 }
 
 fn generate_qbe(module: &mut Module, machine: &Machine, ast: &Vec<OpCodes>) {
+    let mut counter = 1;
+
     module.add_data(DataDef {
         linkage: Linkage::public(),
         name: "tape".into(),
@@ -34,13 +36,177 @@ fn generate_qbe(module: &mut Module, machine: &Machine, ast: &Vec<OpCodes>) {
     );
 
     func.add_block("start".to_string());
-    func.add_instr(Instr::Ret(Some(Value::Const(0))));
 
-    // for part in ast {
-    //     match part {
-    //         OpCodes::Inc(x) => todo!(),
-    //     }
-    // }
+    // Main logic
+    for part in ast {
+        match part {
+            OpCodes::Inc(x) => {
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Load(Type::Word, Value::Global("ptr".to_string())),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Exts(Type::Word, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter.to_string())),
+                    Type::Long,
+                    Instr::Mul(
+                        Value::Temporary(format!(".{}", (counter - 1).to_string())),
+                        Value::Const(1),
+                    ),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Add(
+                        Value::Global("tape".to_string()),
+                        Value::Temporary(format!(".{}", counter - 1)),
+                    ),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Loads(Type::Byte, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Exts(Type::Byte, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Add(
+                        Value::Temporary(format!(".{}", counter - 1)),
+                        Value::Const(*x as u64),
+                    ),
+                );
+                func.add_instr(Instr::Store(
+                    Type::Byte,
+                    Value::Temporary(format!(".{}", counter - 3)),
+                    Value::Temporary(format!(".{}", counter)),
+                ));
+                counter += 1;
+            }
+            OpCodes::Dec(x) => {
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Load(Type::Word, Value::Global("ptr".to_string())),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Exts(Type::Word, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter.to_string())),
+                    Type::Long,
+                    Instr::Mul(
+                        Value::Temporary(format!(".{}", (counter - 1).to_string())),
+                        Value::Const(1),
+                    ),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Add(
+                        Value::Global("tape".to_string()),
+                        Value::Temporary(format!(".{}", counter - 1)),
+                    ),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Loads(Type::Byte, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Exts(Type::Byte, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Sub(
+                        Value::Temporary(format!(".{}", counter - 1)),
+                        Value::Const(*x as u64),
+                    ),
+                );
+                func.add_instr(Instr::Store(
+                    Type::Byte,
+                    Value::Temporary(format!(".{}", counter - 3)),
+                    Value::Temporary(format!(".{}", counter)),
+                ));
+                counter += 1;
+            }
+            OpCodes::Add(x) => {
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Load(Type::Word, Value::Global("ptr".to_string())),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Add(
+                        Value::Temporary(format!(".{}", counter)),
+                        Value::Const(*x as u64),
+                    ),
+                );
+                counter += 1;
+                func.add_instr(Instr::Store(
+                    Type::Word,
+                    Value::Global("ptr".to_string()),
+                    Value::Temporary(format!(".{}", counter - 1)),
+                ));
+                counter += 1;
+            }
+            OpCodes::Sub(x) => {
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Load(Type::Word, Value::Global("ptr".to_string())),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Sub(
+                        Value::Temporary(format!(".{}", counter)),
+                        Value::Const(*x as u64),
+                    ),
+                );
+                counter += 1;
+                func.add_instr(Instr::Store(
+                    Type::Word,
+                    Value::Global("ptr".to_string()),
+                    Value::Temporary(format!(".{}", counter - 1)),
+                ));
+                counter += 1;
+            }
+            _ => (),
+        }
+    }
+
+    func.add_instr(Instr::Ret(Some(Value::Const(0))));
 
     module.add_function(func);
 }
