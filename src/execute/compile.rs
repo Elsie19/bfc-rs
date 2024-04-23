@@ -11,6 +11,7 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) {
 
 fn generate_qbe(module: &mut Module, machine: &Machine, ast: &Vec<OpCodes>) {
     let mut counter = 1;
+    let mut while_counter = 1;
 
     module.add_data(DataDef {
         linkage: Linkage::public(),
@@ -298,6 +299,59 @@ fn generate_qbe(module: &mut Module, machine: &Machine, ast: &Vec<OpCodes>) {
                     Value::Temporary(format!(".{}", counter)),
                 ));
                 counter += 1;
+            }
+            OpCodes::Loop(x) => {
+                func.add_block(format!("while_cond.{}", while_counter).to_string());
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Load(Type::Word, Value::Global("ptr".to_string())),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Exts(Type::Word, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter.to_string())),
+                    Type::Long,
+                    Instr::Mul(
+                        Value::Temporary(format!(".{}", (counter - 1).to_string())),
+                        Value::Const(1),
+                    ),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Add(
+                        Value::Global("tape".to_string()),
+                        Value::Temporary(format!(".{}", counter - 1)),
+                    ),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Word,
+                    Instr::Loads(Type::Byte, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.assign_instr(
+                    Value::Temporary(format!(".{}", counter)),
+                    Type::Long,
+                    Instr::Exts(Type::Byte, Value::Temporary(format!(".{}", counter - 1))),
+                );
+                counter += 1;
+                func.add_instr(Instr::Jnz(
+                    Value::Temporary(format!(".{}", counter - 1)),
+                    format!("while_body.{}", while_counter + 1),
+                    format!("while_join.{}", while_counter + 2),
+                ));
+                counter += 1;
+                func.add_block(format!("while_body.{}", while_counter + 1).to_string());
+                func.add_block(format!("while_join.{}", while_counter + 2).to_string());
             }
             _ => (),
         }
