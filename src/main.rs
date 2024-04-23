@@ -3,6 +3,8 @@ mod parse;
 
 use std::fs;
 use std::path::PathBuf;
+use std::process::Command;
+use temp_file;
 
 use clap::Parser;
 use execute::compile::compile;
@@ -94,7 +96,36 @@ fn main() {
 
     if args.compile {
         let machine = Machine::new(30_000);
-        compile(&ast, &machine);
+        let text = compile(&ast, &machine);
+        let tmp = temp_file::with_contents(text.as_bytes());
+        let s_file = temp_file::empty();
+        Command::new("qbe")
+            .args([
+                "-o",
+                s_file.path().to_str().unwrap(),
+                tmp.path().to_str().unwrap(),
+            ])
+            .output()
+            .expect("Could not run qbe");
+        Command::new("cc")
+            .args([
+                s_file.path().to_str().unwrap(),
+                "-o",
+                args.rest
+                    .get(0)
+                    .unwrap()
+                    .file_stem()
+                    .unwrap()
+                    .to_str()
+                    .unwrap(),
+            ])
+            .output()
+            .expect("Could not run cc");
+        tmp.cleanup()
+            .expect("Could not remove the temporary IR file");
+        s_file
+            .cleanup()
+            .expect("Could not remove the generated assembly file");
     } else if args.interpret {
         let mut machine = Machine::new(30_000);
         interpret(&ast, &mut machine);

@@ -3,7 +3,7 @@ use qbe::*;
 
 use super::machine::Machine;
 
-pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) {
+pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
     let mut module = Module::new();
     let mut counter = 1;
     let mut while_counter = 1;
@@ -42,7 +42,7 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) {
     generate_qbe(&ast, &mut counter, &mut while_counter, &mut func);
     func.add_instr(Instr::Ret(Some(Value::Const(0))));
     module.add_function(func);
-    println!("{}", module);
+    module.to_string()
 }
 
 fn format_counter(value: i32) -> String {

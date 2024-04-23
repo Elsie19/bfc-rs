@@ -85,6 +85,7 @@ dependencies = [
  "clap",
  "qbe",
  "reedline",
+ "temp-file",
 ]
 
 [[package]]
@@ -555,6 +556,12 @@ dependencies = [
  "quote",
  "unicode-ident",
 ]
+
+[[package]]
+name = "temp-file"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f210bda61d003f311d95611d1b68361df8fe8e732c3609f945441bde881321d"
 
 [[package]]
 name = "thiserror"
