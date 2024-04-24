@@ -7,7 +7,6 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-use std::path::PathBuf;
 use std::process::Command;
 
 use args::args::Args;
@@ -135,7 +134,6 @@ fn main() {
             }
             let ast = generate_ast(&mut file_contents);
             let ast = optimize(ast, optimizings);
-            let file_name = rest;
             let mut machine = Machine::new(30_000);
             interpret(&ast, &mut machine);
         }
