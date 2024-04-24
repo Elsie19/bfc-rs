@@ -17,16 +17,16 @@ impl fmt::Display for OpCodes {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Self::Add(x) => {
-                write!(fmt, "{}", format!("{:+<1$}", "", *x as usize)).unwrap();
+                write!(fmt, "{:+<1$}", "", *x as usize).unwrap();
             }
             Self::Sub(x) => {
-                write!(fmt, "{}", format!("{:-<1$}", "", *x as usize)).unwrap();
+                write!(fmt, "{:-<1$}", "", *x as usize).unwrap();
             }
             Self::Inc(x) => {
-                write!(fmt, "{}", format!("{:><1$}", "", *x as usize)).unwrap();
+                write!(fmt, "{:><1$}", "", *x as usize).unwrap();
             }
             Self::Dec(x) => {
-                write!(fmt, "{}", format!("{:<<1$}", "", *x as usize)).unwrap();
+                write!(fmt, "{:<<1$}", "", *x as usize).unwrap();
             }
             Self::Output => {
                 write!(fmt, ".").unwrap();
