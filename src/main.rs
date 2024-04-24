@@ -105,6 +105,7 @@ fn main() {
             Command::new("cc")
                 .args([
                     "-static",
+                    "-O3",
                     s_path.as_str(),
                     "-o",
                     Path::new(&file_name)
