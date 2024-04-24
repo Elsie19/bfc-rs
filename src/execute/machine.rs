@@ -22,19 +22,19 @@ impl Machine {
     }
 
     pub fn add(&mut self, num: u8) {
-        self.tape[self.ptr] = self.tape[self.ptr].saturating_add(num);
+        self.tape[self.ptr] = self.tape[self.ptr].wrapping_add(num);
     }
 
     pub fn sub(&mut self, num: u8) {
-        self.tape[self.ptr] = self.tape[self.ptr].saturating_sub(num);
+        self.tape[self.ptr] = self.tape[self.ptr].wrapping_sub(num);
     }
 
     pub fn increment(&mut self, num: usize) {
-        self.ptr = self.ptr.saturating_add(num);
+        self.ptr = self.ptr.wrapping_add(num);
     }
 
     pub fn decrement(&mut self, num: usize) {
-        self.ptr = self.ptr.saturating_sub(num);
+        self.ptr = self.ptr.wrapping_sub(num);
     }
 
     pub fn input(&mut self) {
