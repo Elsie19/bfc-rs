@@ -70,12 +70,9 @@ fn main() {
         Commands::Compile { rest } => {
             let file_contents = fs::read_to_string(rest).expect("Could not read file");
             let mut file_contents = file_contents.chars();
-            match balance_brackets(&file_contents) {
-                Err(nar) => {
-                    eprintln!("{}", nar);
-                    std::process::exit(1);
-                }
-                _ => (),
+            if let Err(nar) = balance_brackets(&file_contents) {
+                eprintln!("{}", nar);
+                std::process::exit(1);
             }
             let ast = generate_ast(&mut file_contents);
             let ast = optimize(ast, optimizings);
@@ -125,12 +122,9 @@ fn main() {
         Commands::Interpret { rest } => {
             let file_contents = fs::read_to_string(rest).expect("Could not read file");
             let mut file_contents = file_contents.chars();
-            match balance_brackets(&file_contents) {
-                Err(nar) => {
-                    eprintln!("{}", nar);
-                    std::process::exit(1);
-                }
-                _ => (),
+            if let Err(nar) = balance_brackets(&file_contents) {
+                eprintln!("{}", nar);
+                std::process::exit(1);
             }
             let ast = generate_ast(&mut file_contents);
             let ast = optimize(ast, optimizings);
