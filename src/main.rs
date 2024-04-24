@@ -24,7 +24,7 @@ fn main() {
     let args = Args::parse();
     let optimizings = vec![
         OptimizerStrategies::Contractions,
-        OptimizerStrategies::ClearLoop,
+        // OptimizerStrategies::ClearLoop,
         OptimizerStrategies::DeadCode,
         OptimizerStrategies::PureCode,
     ];
@@ -84,10 +84,16 @@ fn main() {
             let machine = Machine::new(30_000);
             println!(">> Compiling to IR...");
             let text = compile(&ast, &machine);
-            let tmp_path = format!("/tmp/bfc-rs-{}", file_name.to_str().unwrap().to_string());
+            let tmp_path = format!(
+                "/tmp/bfc-rs-{}",
+                file_name.file_name().unwrap().to_str().unwrap().to_string()
+            );
             let mut tmp = File::create(&tmp_path).unwrap();
             write!(tmp, "{}", text).unwrap();
-            let s_path = format!("/tmp/bfc-rs-{}.s", file_name.to_str().unwrap().to_string());
+            let s_path = format!(
+                "/tmp/bfc-rs-{}.s",
+                file_name.file_name().unwrap().to_str().unwrap().to_string()
+            );
             println!(">> Generating assembly...");
             Command::new("qbe")
                 .args(["-o", &s_path, &tmp_path])
