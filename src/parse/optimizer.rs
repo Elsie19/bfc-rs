@@ -115,7 +115,7 @@ fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             OpCodes::Loop(ref x) => {
                 // Do we have `[x]`
                 if x.len() == 1 {
-                    match x.get(0).unwrap() {
+                    match x.first().unwrap() {
                         // Only match on possible clear values
                         OpCodes::Add(_) | OpCodes::Sub(_) => new_ast.push(OpCodes::Clear),
                         _ => new_ast.push(part),

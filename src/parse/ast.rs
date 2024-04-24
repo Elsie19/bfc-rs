@@ -5,10 +5,10 @@ pub fn balance_brackets(program: &std::str::Chars) -> std::result::Result<(), an
     let left = program.clone().filter(|&n| n == ']').count();
     let right = program.clone().filter(|&n| n == '[').count();
     if left != right {
-        return Err(anyhow!(format!(
+        Err(anyhow!(format!(
             "Could not balance brackets:\n'[': {}\n']': {}",
             right, left
-        )));
+        )))
     } else {
         Ok(())
     }

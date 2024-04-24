@@ -85,13 +85,13 @@ fn main() {
             let text = compile(&ast, &machine);
             let tmp_path = format!(
                 "/tmp/bfc-rs-{}",
-                file_name.file_name().unwrap().to_str().unwrap().to_string()
+                file_name.file_name().unwrap().to_str().unwrap()
             );
             let mut tmp = File::create(&tmp_path).unwrap();
             write!(tmp, "{}", text).unwrap();
             let s_path = format!(
                 "/tmp/bfc-rs-{}.s",
-                file_name.file_name().unwrap().to_str().unwrap().to_string()
+                file_name.file_name().unwrap().to_str().unwrap()
             );
             println!(">> Generating assembly...");
             Command::new("qbe")

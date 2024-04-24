@@ -42,7 +42,7 @@ impl Machine {
         stdin()
             .read_exact(&mut input)
             .expect("Could not read stdin");
-        self.tape[self.ptr] = input[0].into();
+        self.tape[self.ptr] = input[0];
     }
 
     pub fn output(&self) {

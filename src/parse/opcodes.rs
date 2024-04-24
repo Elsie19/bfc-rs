@@ -29,20 +29,20 @@ impl fmt::Display for OpCodes {
                 write!(fmt, "{}", format!("{:<<1$}", "", usize::from(*x))).unwrap();
             }
             Self::Output => {
-                write!(fmt, "{}", ".").unwrap();
+                write!(fmt, ".").unwrap();
             }
             Self::Input => {
-                write!(fmt, "{}", ",").unwrap();
+                write!(fmt, ",").unwrap();
             }
             Self::Clear => {
-                write!(fmt, "{}", "[-]").unwrap();
+                write!(fmt, "[-]").unwrap();
             }
             Self::Loop(x) => {
-                write!(fmt, "{}", "[").unwrap();
+                write!(fmt, "[").unwrap();
                 for item in x {
                     write!(fmt, "{}", item).unwrap();
                 }
-                write!(fmt, "{}", "]").unwrap();
+                write!(fmt, "]").unwrap();
             }
         }
         Ok(())

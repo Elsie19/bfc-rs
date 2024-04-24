@@ -39,7 +39,7 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
         Value::Global("tape".to_string()),
     ));
 
-    generate_qbe(&ast, &mut counter, &mut while_counter, &mut func);
+    generate_qbe(ast, &mut counter, &mut while_counter, &mut func);
     func.add_instr(Instr::Ret(Some(Value::Const(0))));
     module.add_function(func);
     module.to_string()
