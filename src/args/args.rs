@@ -12,6 +12,7 @@ pub struct Args {
 #[derive(Subcommand, Debug)]
 pub enum Commands {
     /// Compile program
+    #[clap(alias = "c")]
     Compile {
         /// Emit IR instead of compiling
         #[arg(short, long, default_value_t = false)]
@@ -23,6 +24,7 @@ pub enum Commands {
     },
 
     /// Interpret program
+    #[clap(alias = "i")]
     Interpret {
         /// Input file
         #[clap(required = true)]
@@ -30,5 +32,6 @@ pub enum Commands {
     },
 
     /// Launch shell
+    #[clap(alias = "s")]
     Shell {},
 }
