@@ -15,12 +15,12 @@ cargo build --release
 sudo cp target/release/bfc-rs /usr/bin/
 ```
 
-### Flags
-`-s` will launch an interactive REPL where you can put full brainfuck commands in.
+### Subcommands
+`shell` will launch an interactive REPL where you can put full brainfuck commands in.
 
-`-i <file>` will run the interpreter on the file.
+`interpret <file>` will run the interpreter on the file.
 
-`-c <file>` will compile the program to a static binary.
+`compile <file>` will compile the program to a static binary.
 
 #### Optimizations
 `bfc-rs` offers a couple useful optimizations out of the box:
