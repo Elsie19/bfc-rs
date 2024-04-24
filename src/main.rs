@@ -67,7 +67,7 @@ fn main() {
                 }
             }
         }
-        Commands::Compile { rest } => {
+        Commands::Compile { emit_ir, rest } => {
             let file_contents = fs::read_to_string(rest).expect("Could not read file");
             let mut file_contents = file_contents.chars();
             if let Err(nar) = balance_brackets(&file_contents) {
@@ -78,8 +78,14 @@ fn main() {
             let ast = optimize(ast, optimizings);
             let file_name = rest;
             let machine = Machine::new(30_000);
-            println!(">> Compiling to IR...");
+            if !*emit_ir {
+                println!(">> Compiling to IR...");
+            }
             let text = compile(&ast, &machine);
+            if *emit_ir {
+                println!("{}", text);
+                std::process::exit(0);
+            }
             let tmp_path = format!(
                 "/tmp/bfc-rs-{}",
                 file_name.file_name().unwrap().to_str().unwrap()

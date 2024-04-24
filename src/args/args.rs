@@ -13,6 +13,10 @@ pub struct Args {
 pub enum Commands {
     /// Compile program
     Compile {
+        /// Emit IR instead of compiling
+        #[arg(short, long, default_value_t = false)]
+        emit_ir: bool,
+
         /// Input file
         #[clap(required = true)]
         rest: PathBuf,
