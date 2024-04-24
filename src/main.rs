@@ -1,10 +1,13 @@
 mod execute;
 mod parse;
 
+use std::ffi::OsStr;
 use std::fs;
+use std::fs::File;
+use std::io::Write;
+use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
-use temp_file;
 
 use clap::Parser;
 use execute::compile::compile;
@@ -95,37 +98,48 @@ fn main() {
     let ast = optimize(ast, optimizings);
 
     if args.compile {
+        let file_name = args.rest.get(0).unwrap().file_name();
         let machine = Machine::new(30_000);
+        println!(">> Compiling to IR...");
         let text = compile(&ast, &machine);
-        let tmp = temp_file::with_contents(text.as_bytes());
-        let s_file = temp_file::empty();
+        let tmp_path = format!(
+            "/tmp/bfc-rs-{}",
+            file_name.unwrap().to_str().unwrap().to_string()
+        );
+        let mut tmp = File::create(&tmp_path).unwrap();
+        write!(tmp, "{}", text).unwrap();
+        let s_path = format!(
+            "/tmp/bfc-rs-{}.s",
+            file_name.unwrap().to_str().unwrap().to_string()
+        );
+        println!(">> Generating assembly...");
         Command::new("qbe")
-            .args([
-                "-o",
-                s_file.path().to_str().unwrap(),
-                tmp.path().to_str().unwrap(),
-            ])
+            .args(["-o", &s_path, &tmp_path])
             .output()
             .expect("Could not run qbe");
+        println!(">> Compiling assembly to final binary...");
         Command::new("cc")
             .args([
-                s_file.path().to_str().unwrap(),
+                "-static",
+                s_path.as_str(),
                 "-o",
-                args.rest
-                    .get(0)
-                    .unwrap()
+                Path::new(&file_name.unwrap())
                     .file_stem()
-                    .unwrap()
-                    .to_str()
-                    .unwrap(),
+                    .and_then(OsStr::to_str)
+                    .unwrap_or("Unknown"),
             ])
             .output()
             .expect("Could not run cc");
-        tmp.cleanup()
-            .expect("Could not remove the temporary IR file");
-        s_file
-            .cleanup()
-            .expect("Could not remove the generated assembly file");
+        println!(">> Stripping binary...");
+        Command::new("strip")
+            .args([Path::new(&file_name.unwrap())
+                .file_stem()
+                .and_then(OsStr::to_str)
+                .unwrap_or("Unknown")])
+            .output()
+            .expect("Could not run strip");
+        fs::remove_file(tmp_path).unwrap();
+        fs::remove_file(s_path).unwrap();
     } else if args.interpret {
         let mut machine = Machine::new(30_000);
         interpret(&ast, &mut machine);
