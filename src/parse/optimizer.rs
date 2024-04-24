@@ -36,7 +36,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Add(counter as u8));
+                new_ast.push(OpCodes::Add(counter as u32));
             }
             OpCodes::Sub(x) => {
                 let mut counter = *x as usize;
@@ -44,7 +44,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Sub(counter as u8));
+                new_ast.push(OpCodes::Sub(counter as u32));
             }
             OpCodes::Inc(x) => {
                 let mut counter = *x as usize;
@@ -52,7 +52,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Inc(counter as u8));
+                new_ast.push(OpCodes::Inc(counter as u32));
             }
             OpCodes::Dec(x) => {
                 let mut counter = *x as usize;
@@ -60,7 +60,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter = counter.saturating_add(1);
                     p.next();
                 }
-                new_ast.push(OpCodes::Dec(counter as u8));
+                new_ast.push(OpCodes::Dec(counter as u32));
             }
             OpCodes::Loop(x) => {
                 new_ast.push(OpCodes::Loop(contract(x.to_vec())));

@@ -2,10 +2,10 @@ use core::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum OpCodes {
-    Add(u8),
-    Sub(u8),
-    Inc(u8),
-    Dec(u8),
+    Add(u32),
+    Sub(u32),
+    Inc(u32),
+    Dec(u32),
     Output,
     Input,
     Loop(Vec<OpCodes>),
@@ -17,16 +17,16 @@ impl fmt::Display for OpCodes {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Self::Add(x) => {
-                write!(fmt, "{}", format!("{:+<1$}", "", usize::from(*x))).unwrap();
+                write!(fmt, "{}", format!("{:+<1$}", "", *x as usize)).unwrap();
             }
             Self::Sub(x) => {
-                write!(fmt, "{}", format!("{:-<1$}", "", usize::from(*x))).unwrap();
+                write!(fmt, "{}", format!("{:-<1$}", "", *x as usize)).unwrap();
             }
             Self::Inc(x) => {
-                write!(fmt, "{}", format!("{:><1$}", "", usize::from(*x))).unwrap();
+                write!(fmt, "{}", format!("{:><1$}", "", *x as usize)).unwrap();
             }
             Self::Dec(x) => {
-                write!(fmt, "{}", format!("{:<<1$}", "", usize::from(*x))).unwrap();
+                write!(fmt, "{}", format!("{:<<1$}", "", *x as usize)).unwrap();
             }
             Self::Output => {
                 write!(fmt, ".").unwrap();

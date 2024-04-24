@@ -5,10 +5,10 @@ pub fn interpret(ast: &Vec<OpCodes>, machine: &mut Machine) {
     for op in ast {
         match op {
             OpCodes::Inc(x) => {
-                machine.increment(x.to_owned().into());
+                machine.increment(*x as usize);
             }
             OpCodes::Dec(x) => {
-                machine.decrement(x.to_owned().into());
+                machine.decrement(*x as usize);
             }
             OpCodes::Clear => {
                 machine.set_byte(0);
