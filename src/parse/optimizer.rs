@@ -33,7 +33,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             OpCodes::Add(x) => {
                 let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter = counter.saturating_add(1);
+                    counter += 1;
                     p.next();
                 }
                 new_ast.push(OpCodes::Add(counter as u32));
@@ -41,7 +41,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             OpCodes::Sub(x) => {
                 let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter = counter.saturating_add(1);
+                    counter += 1;
                     p.next();
                 }
                 new_ast.push(OpCodes::Sub(counter as u32));
@@ -49,7 +49,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             OpCodes::Inc(x) => {
                 let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter = counter.saturating_add(1);
+                    counter += 1;
                     p.next();
                 }
                 new_ast.push(OpCodes::Inc(counter as u32));
@@ -57,7 +57,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
             OpCodes::Dec(x) => {
                 let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
-                    counter = counter.saturating_add(1);
+                    counter += 1;
                     p.next();
                 }
                 new_ast.push(OpCodes::Dec(counter as u32));
