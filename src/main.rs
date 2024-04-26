@@ -23,7 +23,7 @@ fn main() {
     let args = Args::parse();
     let optimizings = vec![
         OptimizerStrategies::Contractions,
-        // OptimizerStrategies::ClearLoop,
+        OptimizerStrategies::ClearLoop,
         OptimizerStrategies::DeadCode,
         OptimizerStrategies::PureCode,
     ];

@@ -226,12 +226,22 @@ fn generate_qbe(
                     Type::Long,
                     Instr::Load(Type::Long, Value::Temporary(format_counter(1))),
                 );
+                func.assign_instr(
+                    Value::Temporary(format_counter(*counter + 2)),
+                    Type::Word,
+                    Instr::Load(Type::Word, Value::Temporary(format_counter(*counter + 1))),
+                );
+                func.assign_instr(
+                    Value::Temporary(format_counter(*counter + 3)),
+                    Type::Word,
+                    Instr::Copy(Value::Const(0)),
+                );
                 func.add_instr(Instr::Store(
-                    Type::Byte,
+                    Type::Word,
                     Value::Temporary(format_counter(*counter + 1)),
-                    Value::Const(0),
+                    Value::Temporary(format_counter(*counter + 3)),
                 ));
-                *counter += 2;
+                *counter += 3;
             }
         }
     }
