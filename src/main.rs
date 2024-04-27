@@ -74,7 +74,9 @@ fn main() {
                 eprintln!("{}", nar);
                 std::process::exit(1);
             }
+            println!(">> Generating AST...");
             let ast = generate_ast(&mut file_contents);
+            println!(">> Optimizing AST...");
             let ast = optimize(ast, optimizings);
             let file_name = rest;
             let machine = Machine::new(30_000);
