@@ -39,6 +39,34 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
         Value::Global("tape".to_owned()),
     ));
 
+    // %.2 =l loadl $stdout
+    func.assign_instr(
+        Value::Temporary(format_counter(counter + 1)),
+        Type::Long,
+        Instr::Load(Type::Long, Value::Global("stdout".to_owned())),
+    );
+
+    // %.3 =l extsw 0
+    func.assign_instr(
+        Value::Temporary(format_counter(counter + 2)),
+        Type::Long,
+        Instr::Exts(Type::Word, Value::Const(0)),
+    );
+
+    // call $setbuf(l %.2, l %.3)
+    // The goal of this is to disable buffering, because it will give some programs that print a
+    // lot in a single line but takes a while a visible speed boost so that the user can see
+    // something is going on.
+    func.add_instr(Instr::Call(
+        "setbuf".to_owned(),
+        vec![
+            (Type::Long, Value::Temporary(format_counter(counter + 1))),
+            (Type::Long, Value::Temporary(format_counter(counter + 2))),
+        ],
+    ));
+
+    counter += 2;
+
     generate_qbe(ast, &mut counter, &mut while_counter, &mut func);
     func.add_instr(Instr::Ret(Some(Value::Const(0))));
     module.add_function(func);
