@@ -106,7 +106,6 @@ fn main() {
                 .args([
                     "-static",
                     "-O3",
-                    "-fwrapv",
                     s_path.as_str(),
                     "-o",
                     Path::new(&file_name)
