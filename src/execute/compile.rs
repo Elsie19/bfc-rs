@@ -13,17 +13,17 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
         align: Some(8),
         items: vec![
             // (Type::Byte, DataItem::Const(0)),
-            (Type::Zero, DataItem::Const(machine.get_size() as u64 - 1)),
+            (Type::Zero, DataItem::Const(machine.get_size() as u64)),
         ],
     });
     // Create `main`
     let mut func = Function::new(
         Linkage::public(),
-        "main".to_string(),
+        "main".to_owned(),
         Vec::new(),
         Some(Type::Word),
     );
-    func.add_block("start".to_string());
+    func.add_block("start".to_owned());
 
     // %.1 =l alloc8 8
     func.assign_instr(
@@ -36,7 +36,7 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
     func.add_instr(Instr::Store(
         Type::Long,
         Value::Temporary(format_counter(counter)),
-        Value::Global("tape".to_string()),
+        Value::Global("tape".to_owned()),
     ));
 
     generate_qbe(ast, &mut counter, &mut while_counter, &mut func);
@@ -171,7 +171,7 @@ fn generate_qbe(
                     Value::Temporary(format_counter(*counter + 3)),
                     Type::Word,
                     Instr::Call(
-                        "putchar".to_string(),
+                        "putchar".to_owned(),
                         vec![(Type::Word, Value::Temporary(format_counter(*counter + 2)))],
                     ),
                 );
@@ -181,7 +181,7 @@ fn generate_qbe(
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Word,
-                    Instr::Call("getchar".to_string(), vec![]),
+                    Instr::Call("getchar".to_owned(), vec![]),
                 );
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 2)),
@@ -221,6 +221,8 @@ fn generate_qbe(
                 func.add_block(format_label(returned_while + 2));
             }
             OpCodes::Clear => {
+                // Functions basically the same as `OpCodes::Inc/Dec` but instead of running add or
+                // sub on it, we just copy the value 0.
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Long,
