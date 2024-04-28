@@ -114,6 +114,7 @@ fn main() {
                     // I'm fairly certain based on tests I have run that cc won't actually run any
                     // optimizations on assembly, regardless of `-On`.
                     "-O3",
+                    "-flto",
                     s_path.as_str(),
                     "-o",
                     Path::new(&file_name)
