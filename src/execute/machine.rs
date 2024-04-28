@@ -1,4 +1,4 @@
-use std::io::{stdin, Read};
+use std::io::{self, stdin, Read, Write};
 
 pub struct Machine {
     ptr: usize,
@@ -50,15 +50,17 @@ impl Machine {
     }
 
     pub fn input(&mut self) {
-        let mut input: [u8; 4] = [0; 4];
+        let mut input: [u8; 1] = [0; 1];
         stdin()
             .read_exact(&mut input)
             .expect("Could not read stdin");
-        self.tape[self.ptr] = u32::from_le_bytes(input);
+        io::stdout().flush().unwrap();
+        self.tape[self.ptr] = input[0].into();
     }
 
     pub fn output(&self) {
         print!("{}", char::from_u32(self.tape[self.ptr]).unwrap());
+        io::stdout().flush().unwrap();
     }
 
     pub fn get_byte(&self) -> u32 {
