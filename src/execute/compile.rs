@@ -90,7 +90,23 @@ fn generate_qbe(
     // Main logic
     for part in ast {
         match part {
+            // Ok this is for people possibly looking into using QBE for their brainfuck compiler
+            // but are totally confused as how to implement it, just like I was, so I'll explain it
+            // here. You're welcome ;)
+            //
+            // So the first thing which is up a bit in the code which is important is this:
+            //     storel $tape, %.1
+            // which is basicaly just storing a number (%.1) which acts like a pointer to $tape.
             OpCodes::Inc(x) => {
+                // For this set, we are incrementing the pointer, but we don't really have a
+                // pointer in the compiled program. So what do we do?
+                //
+                // %.2 =l loadl %.1
+                // %.3 =l add %.2, x*4
+                // storel %.3, %.1
+                //
+                // Recall that %.1 is assigned to an alloc8 8: this is just our pointer of sorts.
+                // All this function does is increment the "pointer", which is really just an int.
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Long,
@@ -112,6 +128,7 @@ fn generate_qbe(
                 *counter += 2;
             }
             OpCodes::Dec(x) => {
+                // Same for this one, but use Sub instead of Add
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Long,
@@ -133,6 +150,15 @@ fn generate_qbe(
                 *counter += 2;
             }
             OpCodes::Add(x) => {
+                // %.2 =l loadl %.1
+                // %.3 =w loadw %.2
+                // %.4 =w add %.3, x
+                // storew %.4, %.2
+                //
+                // So what this does is load our pointer into a register (%.2), then does a
+                // conversion to make it a word in %.3, then we add our x into what we got from
+                // %.3, then we store that computation into our original %.2 which loaded the
+                // pointer.
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Long,
@@ -185,6 +211,8 @@ fn generate_qbe(
                 *counter += 3;
             }
             OpCodes::Output => {
+                // Same drill, we load our pointer, then we run the C putchar function on our
+                // loaded pointer
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Long,
