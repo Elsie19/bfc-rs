@@ -11,10 +11,7 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
         linkage: Linkage::private(),
         name: "tape".into(),
         align: Some(8),
-        items: vec![
-            // (Type::Byte, DataItem::Const(0)),
-            (Type::Zero, DataItem::Const(machine.get_size() as u64)),
-        ],
+        items: vec![(Type::Zero, DataItem::Const(machine.get_size() as u64))],
     });
     // Create `main`
     let mut func = Function::new(
