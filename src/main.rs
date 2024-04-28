@@ -67,7 +67,11 @@ fn main() {
                 }
             }
         }
-        Commands::Compile { emit_ir, rest } => {
+        Commands::Compile {
+            emit_ir,
+            dynamic,
+            rest,
+        } => {
             let file_contents = fs::read_to_string(rest).expect("Could not read file");
             let mut file_contents = file_contents.chars();
             if let Err(nar) = balance_brackets(&file_contents) {
@@ -110,7 +114,11 @@ fn main() {
             println!(">> Compiling assembly to final binary...");
             Command::new("cc")
                 .args([
-                    if static_comp { "-static" } else { "-dynamic" },
+                    if *dynamic || !static_comp {
+                        "-dynamic"
+                    } else {
+                        "-static"
+                    },
                     // I'm fairly certain based on tests I have run that cc won't actually run any
                     // optimizations on assembly, regardless of `-On`.
                     "-O3",

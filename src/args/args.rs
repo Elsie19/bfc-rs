@@ -18,6 +18,10 @@ pub enum Commands {
         #[arg(short, long, default_value_t = false)]
         emit_ir: bool,
 
+        /// Force dynamic linking
+        #[arg(short, long, default_value_t = false)]
+        dynamic: bool,
+
         /// Input file
         #[clap(required = true)]
         rest: PathBuf,
