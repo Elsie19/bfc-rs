@@ -9,7 +9,7 @@ pub enum OptimizerStrategies {
 }
 
 pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = ast.clone();
+    let mut new_ast: Vec<OpCodes> = ast.to_owned();
     if optimizers.contains(&OptimizerStrategies::ClearLoop) {
         new_ast = clear(new_ast);
     }

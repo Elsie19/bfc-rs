@@ -11,7 +11,7 @@ pub struct Args {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// Compile program
+    /// Compile program into a binary
     #[clap(alias = "c")]
     Compile {
         /// Emit IR instead of compiling
