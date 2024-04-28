@@ -129,7 +129,7 @@ fn generate_qbe(
                     Type::Long,
                     Instr::Add(
                         Value::Temporary(format_counter(*counter + 1)),
-                        Value::Const(*x as u64 * 4),
+                        Value::Const(u64::from(*x) * 4),
                     ),
                 );
                 func.add_instr(Instr::Store(
@@ -151,7 +151,7 @@ fn generate_qbe(
                     Type::Long,
                     Instr::Sub(
                         Value::Temporary(format_counter(*counter + 1)),
-                        Value::Const(*x as u64 * 4),
+                        Value::Const(u64::from(*x) * 4),
                     ),
                 );
                 func.add_instr(Instr::Store(

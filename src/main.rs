@@ -53,7 +53,7 @@ fn main() {
                             println!("    ++++++++[>++++[>++>+++>+++>+<<<<-]\n    >+>+>->>+[<]<-]>>.>---.+++++++..++\n    +.>>.<-.<.+++.------.--------.>>+.>++.");
                         }
                         let ast =
-                            optimize(generate_ast(&mut buffer.chars()), optimizings.to_owned());
+                            optimize(&generate_ast(&mut buffer.chars()), optimizings.to_owned());
                         let mut machine = Machine::new(30_000);
                         interpret(&ast, &mut machine);
                     }
@@ -85,7 +85,7 @@ fn main() {
             if !*emit_ir {
                 println!(">> Optimizing AST...");
             }
-            let ast = optimize(ast, optimizings);
+            let ast = optimize(&ast, optimizings);
             let file_name = rest;
             let machine = Machine::new(30_000);
             if !*emit_ir {
@@ -144,7 +144,7 @@ fn main() {
                 std::process::exit(1);
             }
             let ast = generate_ast(&mut file_contents);
-            let ast = optimize(ast, optimizings);
+            let ast = optimize(&ast, optimizings);
             let mut machine = Machine::new(30_000);
             interpret(&ast, &mut machine);
         }

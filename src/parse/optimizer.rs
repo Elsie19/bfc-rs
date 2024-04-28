@@ -8,7 +8,7 @@ pub enum OptimizerStrategies {
     PureCode,
 }
 
-pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
+pub fn optimize(ast: &[OpCodes], optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
     let mut new_ast: Vec<OpCodes> = ast.to_owned();
     if optimizers.contains(&OptimizerStrategies::ClearLoop) {
         new_ast = clear(new_ast);
@@ -20,7 +20,7 @@ pub fn optimize(ast: Vec<OpCodes>, optimizers: Vec<OptimizerStrategies>) -> Vec<
         new_ast = contract(new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::PureCode) {
-        new_ast = remove_pure(new_ast);
+        new_ast = remove_pure(&new_ast);
     }
     new_ast
 }
@@ -91,10 +91,7 @@ fn clear_dead_code(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     new_ast.push(OpCodes::Clear);
                 }
             }
-            enummy @ OpCodes::Add(_)
-            | enummy @ OpCodes::Sub(_)
-            | enummy @ OpCodes::Inc(_)
-            | enummy @ OpCodes::Dec(_) => {
+            enummy @ (OpCodes::Add(_) | OpCodes::Sub(_) | OpCodes::Inc(_) | OpCodes::Dec(_)) => {
                 if p.peek().copied() == enummy.opposite().as_ref() {
                     p.next();
                 } else {
@@ -130,8 +127,8 @@ fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     new_ast
 }
 
-fn remove_pure(ast: Vec<OpCodes>) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = ast.clone();
+fn remove_pure(ast: &[OpCodes]) -> Vec<OpCodes> {
+    let mut new_ast: Vec<OpCodes> = ast.to_owned();
     let mut pure_ast: Vec<OpCodes> = vec![];
     while let Some(op) = new_ast.pop() {
         match op {
