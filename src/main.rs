@@ -115,6 +115,7 @@ fn main() {
                     // optimizations on assembly, regardless of `-On`.
                     "-O3",
                     "-flto",
+                    "-s",
                     s_path.as_str(),
                     "-o",
                     Path::new(&file_name)
@@ -124,14 +125,6 @@ fn main() {
                 ])
                 .output()
                 .expect("Could not run cc");
-            println!(">> Stripping binary...");
-            Command::new("strip")
-                .args([Path::new(&file_name)
-                    .file_stem()
-                    .and_then(OsStr::to_str)
-                    .unwrap_or("Unknown")])
-                .output()
-                .expect("Could not run strip");
             fs::remove_file(tmp_path).unwrap();
             fs::remove_file(s_path).unwrap();
         }
