@@ -1,7 +1,6 @@
+use crate::execute::machine::Machine;
 use crate::parse::opcodes::OpCodes;
 use qbe::*;
-
-use super::machine::Machine;
 
 pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
     let mut module = Module::new();
