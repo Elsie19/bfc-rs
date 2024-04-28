@@ -2,7 +2,23 @@ use crate::execute::machine::Machine;
 use crate::parse::opcodes::OpCodes;
 use qbe::*;
 
-pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
+/// Return our QBE IR, and also a bool if this should be statically compiled
+pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> (String, bool) {
+    // If so, let's just create a silly little return
+    if ast.is_empty() {
+        let mut module = Module::new();
+        let mut func = Function::new(
+            Linkage::public(),
+            "main".to_owned(),
+            Vec::new(),
+            Some(Type::Word),
+        );
+        func.add_block("start".to_owned());
+        func.add_instr(Instr::Ret(Some(Value::Const(0))));
+        module.add_function(func);
+        return (module.to_string(), false);
+    }
+
     let mut module = Module::new();
     let mut counter = 1;
     let mut while_counter = 1;
@@ -66,7 +82,7 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> String {
     generate_qbe(ast, &mut counter, &mut while_counter, &mut func);
     func.add_instr(Instr::Ret(Some(Value::Const(0))));
     module.add_function(func);
-    module.to_string()
+    (module.to_string(), true)
 }
 
 fn format_counter(value: i32) -> String {

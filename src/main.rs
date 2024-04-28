@@ -87,7 +87,7 @@ fn main() {
             if !*emit_ir {
                 println!(">> Compiling to IR...");
             }
-            let text = compile(&ast, &machine);
+            let (text, static_comp) = compile(&ast, &machine);
             if *emit_ir {
                 print!("{}", text);
                 std::process::exit(0);
@@ -110,7 +110,7 @@ fn main() {
             println!(">> Compiling assembly to final binary...");
             Command::new("cc")
                 .args([
-                    "-static",
+                    if static_comp { "-static" } else { "-dynamic" },
                     // I'm fairly certain based on tests I have run that cc won't actually run any
                     // optimizations on assembly, regardless of `-On`.
                     "-O3",
