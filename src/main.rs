@@ -89,7 +89,7 @@ fn main() {
             }
             let text = compile(&ast, &machine);
             if *emit_ir {
-                println!("{}", text);
+                print!("{}", text);
                 std::process::exit(0);
             }
             let tmp_path = format!(
