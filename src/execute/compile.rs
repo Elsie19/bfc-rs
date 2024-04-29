@@ -86,11 +86,11 @@ pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> (String, bool) {
 }
 
 fn format_counter(value: i32) -> String {
-    format!(".{}", value)
+    format!(".{value}")
 }
 
 fn format_label(value: i32) -> String {
-    format!("loop.{}", value)
+    format!("loop.{value}")
 }
 
 fn generate_qbe(
@@ -186,7 +186,7 @@ fn generate_qbe(
                     Type::Word,
                     Instr::Add(
                         Value::Temporary(format_counter(*counter + 2)),
-                        Value::Const(*x as u64),
+                        Value::Const(u64::try_from(*x).unwrap()),
                     ),
                 );
                 func.add_instr(Instr::Store(
@@ -212,7 +212,7 @@ fn generate_qbe(
                     Type::Word,
                     Instr::Sub(
                         Value::Temporary(format_counter(*counter + 2)),
-                        Value::Const(*x as u64),
+                        Value::Const(u64::try_from(*x).unwrap()),
                     ),
                 );
                 func.add_instr(Instr::Store(

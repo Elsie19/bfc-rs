@@ -52,17 +52,12 @@ fn main() {
                             println!("\n# Example program:");
                             println!("    ++++++++[>++++[>++>+++>+++>+<<<<-]\n    >+>+>->>+[<]<-]>>.>---.+++++++..++\n    +.>>.<-.<.+++.------.--------.>>+.>++.");
                         }
-                        let ast =
-                            optimize(&generate_ast(&mut buffer.chars()), optimizings.to_owned());
+                        let ast = optimize(&generate_ast(&mut buffer.chars()), optimizings.clone());
                         let mut machine = Machine::new(30_000);
                         interpret(&ast, &mut machine);
                     }
-                    Ok(Signal::CtrlD) | Ok(Signal::CtrlC) => {
-                        println!("\nQuitting! Hope you aren't insane yet!");
-                        std::process::exit(130);
-                    }
                     x => {
-                        println!("Event: {:?}", x);
+                        println!("Event: {x:?}");
                     }
                 }
             }
@@ -75,7 +70,7 @@ fn main() {
             let file_contents = fs::read_to_string(rest).expect("Could not read file");
             let mut file_contents = file_contents.chars();
             if let Err(nar) = balance_brackets(&file_contents) {
-                eprintln!("{}", nar);
+                eprintln!("{nar}");
                 std::process::exit(1);
             }
             if !*emit_ir {
@@ -93,7 +88,7 @@ fn main() {
             }
             let (text, static_comp) = compile(&ast, &machine);
             if *emit_ir {
-                print!("{}", text);
+                print!("{text}");
                 std::process::exit(0);
             }
             let tmp_path = format!(
@@ -101,7 +96,7 @@ fn main() {
                 file_name.file_name().unwrap().to_str().unwrap()
             );
             let mut tmp = File::create(&tmp_path).unwrap();
-            write!(tmp, "{}", text).unwrap();
+            write!(tmp, "{text}").unwrap();
             let s_path = format!(
                 "/tmp/bfc-rs-{}.s",
                 file_name.file_name().unwrap().to_str().unwrap()
@@ -140,7 +135,7 @@ fn main() {
             let file_contents = fs::read_to_string(rest).expect("Could not read file");
             let mut file_contents = file_contents.chars();
             if let Err(nar) = balance_brackets(&file_contents) {
-                eprintln!("{}", nar);
+                eprintln!("{nar}");
                 std::process::exit(1);
             }
             let ast = generate_ast(&mut file_contents);

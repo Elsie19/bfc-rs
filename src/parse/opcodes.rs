@@ -40,7 +40,7 @@ impl fmt::Display for OpCodes {
             Self::Loop(x) => {
                 write!(fmt, "[").unwrap();
                 for item in x {
-                    write!(fmt, "{}", item).unwrap();
+                    write!(fmt, "{item}").unwrap();
                 }
                 write!(fmt, "]").unwrap();
             }

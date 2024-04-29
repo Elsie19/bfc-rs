@@ -14,7 +14,7 @@ pub fn optimize(ast: &[OpCodes], optimizers: Vec<OptimizerStrategies>) -> Vec<Op
         new_ast = clear(new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::DeadCode) {
-        new_ast = clear_dead_code(new_ast);
+        new_ast = clear_dead_code(&new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::Contractions) {
         new_ast = contract(new_ast);
@@ -36,7 +36,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Add(counter as u32));
+                new_ast.push(OpCodes::Add(u32::try_from(counter).unwrap()));
             }
             OpCodes::Sub(x) => {
                 let mut counter = *x as usize;
@@ -44,7 +44,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Sub(counter as u32));
+                new_ast.push(OpCodes::Sub(u32::try_from(counter).unwrap()));
             }
             OpCodes::Inc(x) => {
                 let mut counter = *x as usize;
@@ -52,7 +52,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Inc(counter as u32));
+                new_ast.push(OpCodes::Inc(u32::try_from(counter).unwrap()));
             }
             OpCodes::Dec(x) => {
                 let mut counter = *x as usize;
@@ -60,7 +60,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Dec(counter as u32));
+                new_ast.push(OpCodes::Dec(u32::try_from(counter).unwrap()));
             }
             OpCodes::Loop(x) => {
                 new_ast.push(OpCodes::Loop(contract(x.to_vec())));
@@ -71,7 +71,7 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     new_ast
 }
 
-fn clear_dead_code(ast: Vec<OpCodes>) -> Vec<OpCodes> {
+fn clear_dead_code(ast: &[OpCodes]) -> Vec<OpCodes> {
     let mut new_ast: Vec<OpCodes> = vec![];
     let mut counter = 0;
 
