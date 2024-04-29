@@ -1,5 +1,7 @@
 use crate::parse::opcodes::OpCodes;
 
+use super::opcodes::Tokens;
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum OptimizerStrategies {
     Contractions,
@@ -8,8 +10,8 @@ pub enum OptimizerStrategies {
     PureCode,
 }
 
-pub fn optimize(ast: &[OpCodes], optimizers: Vec<OptimizerStrategies>) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = ast.to_owned();
+pub fn optimize(ast: &[Tokens], optimizers: Vec<OptimizerStrategies>) -> Vec<Tokens> {
+    let mut new_ast: Vec<Tokens> = ast.to_owned();
     if optimizers.contains(&OptimizerStrategies::ClearLoop) {
         new_ast = clear(new_ast);
     }
@@ -25,18 +27,21 @@ pub fn optimize(ast: &[OpCodes], optimizers: Vec<OptimizerStrategies>) -> Vec<Op
     new_ast
 }
 
-fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = vec![];
+fn contract(ast: Vec<Tokens>) -> Vec<Tokens> {
+    let mut new_ast: Vec<Tokens> = vec![];
     let mut p = ast.iter().peekable();
     while let Some(op) = p.next() {
-        match op {
+        match op.get_type() {
             OpCodes::Add(x) => {
                 let mut counter = *x as usize;
                 while Some(op) == p.peek().copied() {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Add(u32::try_from(counter).unwrap()));
+                new_ast.push(Tokens::new(
+                    OpCodes::Add(u32::try_from(counter).unwrap()),
+                    op.get_location().to_owned(),
+                ));
             }
             OpCodes::Sub(x) => {
                 let mut counter = *x as usize;
@@ -44,7 +49,10 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Sub(u32::try_from(counter).unwrap()));
+                new_ast.push(Tokens::new(
+                    OpCodes::Sub(u32::try_from(counter).unwrap()),
+                    op.get_location().to_owned(),
+                ));
             }
             OpCodes::Inc(x) => {
                 let mut counter = *x as usize;
@@ -52,7 +60,10 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Inc(u32::try_from(counter).unwrap()));
+                new_ast.push(Tokens::new(
+                    OpCodes::Inc(u32::try_from(counter).unwrap()),
+                    op.get_location().to_owned(),
+                ));
             }
             OpCodes::Dec(x) => {
                 let mut counter = *x as usize;
@@ -60,10 +71,16 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
                     counter += 1;
                     p.next();
                 }
-                new_ast.push(OpCodes::Dec(u32::try_from(counter).unwrap()));
+                new_ast.push(Tokens::new(
+                    OpCodes::Dec(u32::try_from(counter).unwrap()),
+                    op.get_location().to_owned(),
+                ));
             }
             OpCodes::Loop(x) => {
-                new_ast.push(OpCodes::Loop(contract(x.to_vec())));
+                new_ast.push(Tokens::new(
+                    OpCodes::Loop(contract(x.to_vec())),
+                    op.get_location().to_owned(),
+                ));
             }
             _ => new_ast.push(op.to_owned()),
         }
@@ -71,54 +88,70 @@ fn contract(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     new_ast
 }
 
-fn clear_dead_code(ast: &[OpCodes]) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = vec![];
+fn clear_dead_code(ast: &[Tokens]) -> Vec<Tokens> {
+    let mut new_ast: Vec<Tokens> = vec![];
     let mut counter = 0;
 
     let mut p = ast.iter().peekable();
     while let Some(part) = p.next() {
-        match part {
+        match part.get_type() {
             OpCodes::Loop(x) => {
                 // Remove empty loops `[]`
                 if !x.is_empty() {
-                    new_ast.push(OpCodes::Loop(x.to_vec()));
+                    new_ast.push(Tokens::new(
+                        OpCodes::Loop(x.to_vec()),
+                        part.get_location().to_owned(),
+                    ))
                 }
             }
             OpCodes::Clear => {
                 // Do we have `[+]` or `[-]` at the beginning?
                 if counter != 0 {
                     // If not, push that mf
-                    new_ast.push(OpCodes::Clear);
+                    new_ast.push(Tokens::new(OpCodes::Clear, part.get_location().to_owned()))
                 }
             }
             enummy @ (OpCodes::Add(_) | OpCodes::Sub(_) | OpCodes::Inc(_) | OpCodes::Dec(_)) => {
-                if p.peek().copied() == enummy.opposite().as_ref() {
+                // Option<Tokens>       Option<OpCodes>
+                if p.peek().copied().is_some()
+                    && p.peek().copied().unwrap().get_type() == enummy.opposite().as_ref().unwrap()
+                {
                     p.next();
                 } else {
-                    new_ast.push(enummy.to_owned());
+                    new_ast.push(Tokens::new(
+                        enummy.to_owned(),
+                        part.get_location().to_owned(),
+                    ));
                 }
             }
-            default => new_ast.push(default.to_owned()),
+            default => new_ast.push(Tokens::new(
+                default.to_owned(),
+                part.get_location().to_owned(),
+            )),
         }
         counter += 1;
     }
     new_ast
 }
 
-fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = vec![];
+fn clear(ast: Vec<Tokens>) -> Vec<Tokens> {
+    let mut new_ast: Vec<Tokens> = vec![];
     for part in ast {
-        match part {
+        match part.get_type() {
             OpCodes::Loop(ref x) => {
                 // Do we have `[x]`
                 if x.len() == 1 {
-                    match x.first().unwrap() {
+                    match x.first().unwrap().get_type() {
                         // Only match on possible clear values
-                        OpCodes::Add(_) | OpCodes::Sub(_) => new_ast.push(OpCodes::Clear),
+                        OpCodes::Add(_) | OpCodes::Sub(_) => new_ast
+                            .push(Tokens::new(OpCodes::Clear, part.get_location().to_owned())),
                         _ => new_ast.push(part),
                     }
                 } else {
-                    new_ast.push(OpCodes::Loop(clear(x.to_vec())));
+                    new_ast.push(Tokens::new(
+                        OpCodes::Loop(clear(x.to_vec())),
+                        part.get_location().to_owned(),
+                    ));
                 }
             }
             _ => new_ast.push(part.to_owned()),
@@ -127,11 +160,11 @@ fn clear(ast: Vec<OpCodes>) -> Vec<OpCodes> {
     new_ast
 }
 
-fn remove_pure(ast: &[OpCodes]) -> Vec<OpCodes> {
-    let mut new_ast: Vec<OpCodes> = ast.to_owned();
-    let mut pure_ast: Vec<OpCodes> = vec![];
+fn remove_pure(ast: &[Tokens]) -> Vec<Tokens> {
+    let mut new_ast: Vec<Tokens> = ast.to_owned();
+    let mut pure_ast: Vec<Tokens> = vec![];
     while let Some(op) = new_ast.pop() {
-        match op {
+        match op.get_type() {
             // Basically if we have codes at the end that cause side effects, we push that, but if
             // we don't, we push that to pure_ast instead. Later I might add a warning message
             // about the no-effect code.

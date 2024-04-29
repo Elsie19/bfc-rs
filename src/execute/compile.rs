@@ -1,9 +1,9 @@
 use crate::execute::machine::Machine;
-use crate::parse::opcodes::OpCodes;
+use crate::parse::opcodes::{OpCodes, Tokens};
 use qbe::*;
 
 /// Return our QBE IR, and also a bool if this should be statically compiled
-pub fn compile(ast: &Vec<OpCodes>, machine: &Machine) -> (String, bool) {
+pub fn compile(ast: &Vec<Tokens>, machine: &Machine) -> (String, bool) {
     // If so, let's just create a silly little return
     if ast.is_empty() {
         let mut module = Module::new();
@@ -94,14 +94,14 @@ fn format_label(value: i32) -> String {
 }
 
 fn generate_qbe(
-    ast: &Vec<OpCodes>,
+    ast: &Vec<Tokens>,
     counter: &mut i32,
     while_counter: &mut i32,
     func: &mut Function<'_>,
 ) {
     // Main logic
     for part in ast {
-        match part {
+        match part.get_type() {
             // Ok this is for people possibly looking into using QBE for their brainfuck compiler
             // but are totally confused as how to implement it, just like I was, so I'll explain it
             // here. You're welcome ;)

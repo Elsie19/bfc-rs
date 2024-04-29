@@ -1,9 +1,10 @@
 use crate::execute::machine::Machine;
 use crate::parse::opcodes::OpCodes;
+use crate::parse::opcodes::Tokens;
 
-pub fn interpret(ast: &Vec<OpCodes>, machine: &mut Machine) {
+pub fn interpret(ast: &Vec<Tokens>, machine: &mut Machine) {
     for op in ast {
-        match op {
+        match op.get_type() {
             OpCodes::Inc(x) => {
                 machine.increment(*x as usize);
             }

@@ -8,9 +8,30 @@ pub enum OpCodes {
     Dec(u32),
     Output,
     Input,
-    Loop(Vec<OpCodes>),
+    Loop(Vec<Tokens>),
     // Special optimizations
     Clear,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct Tokens {
+    code: OpCodes,
+    /// Filename, line, column
+    location: (String, u32, u32),
+}
+
+impl Tokens {
+    pub fn new(code: OpCodes, location: (String, u32, u32)) -> Self {
+        Tokens { code, location }
+    }
+
+    pub fn get_type(&self) -> &OpCodes {
+        &self.code
+    }
+
+    pub fn get_location(&self) -> &(String, u32, u32) {
+        &self.location
+    }
 }
 
 impl fmt::Display for OpCodes {
@@ -40,7 +61,7 @@ impl fmt::Display for OpCodes {
             Self::Loop(x) => {
                 write!(fmt, "[").unwrap();
                 for item in x {
-                    write!(fmt, "{item}").unwrap();
+                    write!(fmt, "{}", item.get_type()).unwrap();
                 }
                 write!(fmt, "]").unwrap();
             }
