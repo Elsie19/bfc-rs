@@ -186,7 +186,7 @@ fn generate_qbe(
                     Type::Word,
                     Instr::Add(
                         Value::Temporary(format_counter(*counter + 2)),
-                        Value::Const(u64::try_from(*x).unwrap()),
+                        Value::Const(*x as u64),
                     ),
                 );
                 func.add_instr(Instr::Store(
@@ -212,7 +212,7 @@ fn generate_qbe(
                     Type::Word,
                     Instr::Sub(
                         Value::Temporary(format_counter(*counter + 2)),
-                        Value::Const(u64::try_from(*x).unwrap()),
+                        Value::Const(*x as u64),
                     ),
                 );
                 func.add_instr(Instr::Store(
