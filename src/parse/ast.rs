@@ -15,6 +15,7 @@ pub fn balance_brackets(program: &std::str::Chars) -> std::result::Result<(), an
     }
 }
 
+// BUG: `line_num` and `column_num` get reset when passed into `[`
 pub fn generate_ast(program: &mut std::str::Chars) -> Vec<Tokens> {
     let mut out = vec![];
     let mut line_num = 1;
