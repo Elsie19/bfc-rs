@@ -64,6 +64,7 @@ fn main() {
         }
         Commands::Compile {
             emit_ir,
+            debug,
             dynamic,
             rest,
         } => {
@@ -76,17 +77,20 @@ fn main() {
             if !*emit_ir {
                 println!(">> Generating AST...");
             }
-            let ast = generate_ast(&mut file_contents);
-            if !*emit_ir {
-                println!(">> Optimizing AST...");
+            let mut ast = generate_ast(&mut file_contents);
+            if !debug {
+                if !*emit_ir {
+                    println!(">> Optimizing AST...");
+                }
+                ast = optimize(&ast, optimizings);
             }
-            let ast = optimize(&ast, optimizings);
             let file_name = rest;
             let machine = Machine::new(30_000);
             if !*emit_ir {
                 println!(">> Compiling to IR...");
             }
-            let (text, static_comp) = compile(&ast, &machine);
+            let (text, static_comp) =
+                compile(&ast, &machine, debug, rest.to_str().unwrap().to_string());
             if *emit_ir {
                 print!("{text}");
                 std::process::exit(0);
@@ -114,11 +118,8 @@ fn main() {
                     } else {
                         "-static"
                     },
-                    // I'm fairly certain based on tests I have run that cc won't actually run any
-                    // optimizations on assembly, regardless of `-On`.
-                    "-O3",
                     "-flto",
-                    "-s",
+                    if *debug { "-g" } else { "-s" },
                     s_path.as_str(),
                     "-o",
                     Path::new(&file_name)

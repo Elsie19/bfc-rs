@@ -22,6 +22,10 @@ pub enum Commands {
         #[arg(short, long, default_value_t = false)]
         dynamic: bool,
 
+        /// Enable debugging symbols
+        #[arg(short = 'g', long, default_value_t = false)]
+        debug: bool,
+
         /// Input file
         #[clap(required = true)]
         rest: PathBuf,
