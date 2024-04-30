@@ -15,11 +15,20 @@ pub fn balance_brackets(program: &std::str::Chars) -> std::result::Result<(), an
     }
 }
 
-// BUG: `line_num` and `column_num` get reset when passed into `[`
-pub fn generate_ast(program: &mut std::str::Chars) -> Vec<Tokens> {
+pub fn generate_ast(
+    program: &mut std::str::Chars,
+    line_num: Option<u32>,
+    column_num: Option<u32>,
+) -> Vec<Tokens> {
     let mut out = vec![];
-    let mut line_num = 1;
-    let mut column_num = 0;
+    let mut line_num = match line_num {
+        Some(i) => i,
+        None => 1,
+    };
+    let mut column_num = match column_num {
+        Some(i) => i,
+        None => 0,
+    };
     while let Some(part) = program.next() {
         column_num += 1;
         match part {
@@ -33,7 +42,7 @@ pub fn generate_ast(program: &mut std::str::Chars) -> Vec<Tokens> {
             '[' => {
                 // out.push(OpCodes::Loop(generate_ast(program)));
                 out.push(Tokens::new(
-                    OpCodes::Loop(generate_ast(program)),
+                    OpCodes::Loop(generate_ast(program, Some(line_num), Some(column_num))),
                     (line_num, column_num),
                 ));
             }
