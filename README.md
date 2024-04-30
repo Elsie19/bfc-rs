@@ -5,7 +5,7 @@ A brainfuck compiler & interpreter with a shell to boot!
 ### Installing
 You must have the following installed that is not included in this binary:
 
-- qbe (https://c9x.me/compile/)
+- qbe (https://c9x.me/compile/, latest commit)
 - cc (probably already a symlink on your system)
 
 Then run:
@@ -57,3 +57,7 @@ thereby turning an at max 254 operation into a single constant operation.
 
 ##### Dead code
 `bfc-rs` will detect dead code that will not affect the programs running and remove it during compile time/interpreting.
+
+### Features
+
+* Debug flag that will produce debug symbols (`-g` on compile)
