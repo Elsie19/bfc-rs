@@ -23,36 +23,18 @@ pub fn generate_ast(program: &mut std::str::Chars) -> Vec<Tokens> {
     while let Some(part) = program.next() {
         column_num += 1;
         match part {
-            '>' => out.push(Tokens::new(
-                OpCodes::Inc(1),
-                ("foo.b".to_string(), line_num, column_num),
-            )),
-            '<' => out.push(Tokens::new(
-                OpCodes::Dec(1),
-                ("foo.b".to_string(), line_num, column_num),
-            )),
-            '+' => out.push(Tokens::new(
-                OpCodes::Add(1),
-                ("foo.b".to_string(), line_num, column_num),
-            )),
-            '-' => out.push(Tokens::new(
-                OpCodes::Sub(1),
-                ("foo.b".to_string(), line_num, column_num),
-            )),
-            '.' => out.push(Tokens::new(
-                OpCodes::Output,
-                ("foo.b".to_string(), line_num, column_num),
-            )),
+            '>' => out.push(Tokens::new(OpCodes::Inc(1), (line_num, column_num))),
+            '<' => out.push(Tokens::new(OpCodes::Dec(1), (line_num, column_num))),
+            '+' => out.push(Tokens::new(OpCodes::Add(1), (line_num, column_num))),
+            '-' => out.push(Tokens::new(OpCodes::Sub(1), (line_num, column_num))),
+            '.' => out.push(Tokens::new(OpCodes::Output, (line_num, column_num))),
             // ',' => out.push(OpCodes::Input),
-            ',' => out.push(Tokens::new(
-                OpCodes::Input,
-                ("foo.b".to_string(), line_num, column_num),
-            )),
+            ',' => out.push(Tokens::new(OpCodes::Input, (line_num, column_num))),
             '[' => {
                 // out.push(OpCodes::Loop(generate_ast(program)));
                 out.push(Tokens::new(
                     OpCodes::Loop(generate_ast(program)),
-                    ("foo.b".to_string(), line_num, column_num),
+                    (line_num, column_num),
                 ));
             }
             ']' => {

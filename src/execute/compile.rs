@@ -3,7 +3,12 @@ use crate::parse::opcodes::{OpCodes, Tokens};
 use qbe::*;
 
 /// Return our QBE IR, and also a bool if this should be statically compiled
-pub fn compile(ast: &Vec<Tokens>, machine: &Machine, debug: &bool, file_location: String) -> (String, bool) {
+pub fn compile(
+    ast: &Vec<Tokens>,
+    machine: &Machine,
+    debug: &bool,
+    file_location: String,
+) -> (String, bool) {
     let mut output_string = String::new();
 
     // If so, let's just create a silly little return
@@ -126,7 +131,10 @@ fn generate_qbe(
                 // Recall that %.1 is assigned to an alloc8 8: this is just our pointer of sorts.
                 // All this function does is increment the "pointer", which is really just an int.
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
@@ -151,7 +159,10 @@ fn generate_qbe(
             OpCodes::Dec(x) => {
                 // Same for this one, but use Sub instead of Add
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
@@ -184,7 +195,10 @@ fn generate_qbe(
                 // %.3, then we store that computation into our original %.2 which loaded the
                 // pointer.
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
@@ -213,7 +227,10 @@ fn generate_qbe(
             }
             OpCodes::Sub(x) => {
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
@@ -244,7 +261,10 @@ fn generate_qbe(
                 // Same drill, we load our pointer, then we run the C putchar function on our
                 // loaded pointer
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
@@ -268,7 +288,10 @@ fn generate_qbe(
             }
             OpCodes::Input => {
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
@@ -289,7 +312,10 @@ fn generate_qbe(
             }
             OpCodes::Loop(ast) => {
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.add_block(format_label(*while_counter));
                 func.assign_instr(
@@ -319,7 +345,10 @@ fn generate_qbe(
                 // Functions basically the same as `OpCodes::Inc/Dec` but instead of running add or
                 // sub on it, we just copy the value 0.
                 if debug {
-                    func.add_instr(Instr::DbgLoc(part.get_location().1 as u64, Some(part.get_location().2 as u64)));
+                    func.add_instr(Instr::DbgLoc(
+                        part.get_location().0 as u64,
+                        Some(part.get_location().1 as u64),
+                    ));
                 }
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),

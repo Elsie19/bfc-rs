@@ -16,12 +16,12 @@ pub enum OpCodes {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Tokens {
     code: OpCodes,
-    /// Filename, line, column
-    location: (String, u32, u32),
+    /// line, column
+    location: (u32, u32),
 }
 
 impl Tokens {
-    pub fn new(code: OpCodes, location: (String, u32, u32)) -> Self {
+    pub fn new(code: OpCodes, location: (u32, u32)) -> Self {
         Tokens { code, location }
     }
 
@@ -29,7 +29,7 @@ impl Tokens {
         &self.code
     }
 
-    pub fn get_location(&self) -> &(String, u32, u32) {
+    pub fn get_location(&self) -> &(u32, u32) {
         &self.location
     }
 }
