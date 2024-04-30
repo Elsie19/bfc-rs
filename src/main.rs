@@ -59,6 +59,10 @@ fn main() {
                         let mut machine = Machine::new(30_000);
                         interpret(&ast, &mut machine);
                     }
+                    Ok(Signal::CtrlC) | Ok(Signal::CtrlD) => {
+                        println!("\nBye bye");
+                        std::process::exit(130);
+                    }
                     x => {
                         println!("Event: {x:?}");
                     }
