@@ -92,7 +92,14 @@ pub fn compile(
     generate_qbe(ast, &mut counter, &mut while_counter, *debug, &mut func);
     func.add_instr(Instr::Ret(Some(Value::Const(0))));
     module.add_function(func);
-    (output_string + "\n" + &module.to_string(), true)
+    (
+        if !output_string.is_empty() {
+            output_string + "\n"
+        } else {
+            "".to_string()
+        } + &module.to_string(),
+        true,
+    )
 }
 
 fn format_counter(value: i32) -> String {
