@@ -29,8 +29,8 @@ impl Tokens {
         &self.code
     }
 
-    pub fn get_location(&self) -> &(u32, u32) {
-        &self.location
+    pub fn get_location(&self) -> (u32, u32) {
+        self.location
     }
 }
 
