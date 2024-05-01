@@ -37,27 +37,13 @@ impl Tokens {
 impl fmt::Display for OpCodes {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            Self::Add(x) => {
-                write!(fmt, "{:+<1$}", "", *x as usize).unwrap();
-            }
-            Self::Sub(x) => {
-                write!(fmt, "{:-<1$}", "", *x as usize).unwrap();
-            }
-            Self::Inc(x) => {
-                write!(fmt, "{:><1$}", "", *x as usize).unwrap();
-            }
-            Self::Dec(x) => {
-                write!(fmt, "{:<<1$}", "", *x as usize).unwrap();
-            }
-            Self::Output => {
-                write!(fmt, ".").unwrap();
-            }
-            Self::Input => {
-                write!(fmt, ",").unwrap();
-            }
-            Self::Clear => {
-                write!(fmt, "[-]").unwrap();
-            }
+            Self::Add(x) => write!(fmt, "{:+<1$}", "", *x as usize).unwrap(),
+            Self::Sub(x) => write!(fmt, "{:-<1$}", "", *x as usize).unwrap(),
+            Self::Inc(x) => write!(fmt, "{:><1$}", "", *x as usize).unwrap(),
+            Self::Dec(x) => write!(fmt, "{:<<1$}", "", *x as usize).unwrap(),
+            Self::Output => write!(fmt, ".").unwrap(),
+            Self::Input => write!(fmt, ",").unwrap(),
+            Self::Clear => write!(fmt, "[-]").unwrap(),
             Self::Loop(x) => {
                 write!(fmt, "[").unwrap();
                 for item in x {
