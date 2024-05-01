@@ -37,10 +37,8 @@ pub fn generate_ast(
             '+' => out.push(Tokens::new(OpCodes::Add(1), (line_num, column_num))),
             '-' => out.push(Tokens::new(OpCodes::Sub(1), (line_num, column_num))),
             '.' => out.push(Tokens::new(OpCodes::Output, (line_num, column_num))),
-            // ',' => out.push(OpCodes::Input),
             ',' => out.push(Tokens::new(OpCodes::Input, (line_num, column_num))),
             '[' => {
-                // out.push(OpCodes::Loop(generate_ast(program)));
                 out.push(Tokens::new(
                     OpCodes::Loop(generate_ast(program, Some(line_num), Some(column_num))),
                     (line_num, column_num),
