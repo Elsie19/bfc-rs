@@ -15,7 +15,11 @@ pub fn balance_brackets(program: &std::str::Chars) -> std::result::Result<(), an
     }
 }
 
-pub fn generate_ast(
+pub fn generate_ast(program: &mut std::str::Chars) -> Vec<Tokens> {
+    generate_ast_internal(program, None, None)
+}
+
+fn generate_ast_internal(
     program: &mut std::str::Chars,
     line_num: Option<u32>,
     column_num: Option<u32>,
@@ -40,13 +44,15 @@ pub fn generate_ast(
             ',' => out.push(Tokens::new(OpCodes::Input, (line_num, column_num))),
             '[' => {
                 out.push(Tokens::new(
-                    OpCodes::Loop(generate_ast(program, Some(line_num), Some(column_num))),
+                    OpCodes::Loop(generate_ast_internal(
+                        program,
+                        Some(line_num),
+                        Some(column_num),
+                    )),
                     (line_num, column_num),
                 ));
             }
-            ']' => {
-                break;
-            }
+            ']' => break,
             '\n' => {
                 line_num += 1;
                 column_num = 0;

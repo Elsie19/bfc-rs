@@ -52,10 +52,7 @@ fn main() {
                             println!("\n# Example program:");
                             println!("    ++++++++[>++++[>++>+++>+++>+<<<<-]\n    >+>+>->>+[<]<-]>>.>---.+++++++..++\n    +.>>.<-.<.+++.------.--------.>>+.>++.");
                         }
-                        let ast = optimize(
-                            &generate_ast(&mut buffer.chars(), None, None),
-                            optimizings.clone(),
-                        );
+                        let ast = optimize(&generate_ast(&mut buffer.chars()), optimizings.clone());
                         let mut machine = Machine::new(30_000);
                         interpret(&ast, &mut machine);
                     }
@@ -84,7 +81,7 @@ fn main() {
             if !*emit_ir {
                 println!(">> Generating AST...");
             }
-            let mut ast = generate_ast(&mut file_contents, None, None);
+            let mut ast = generate_ast(&mut file_contents);
             if !debug {
                 if !*emit_ir {
                     println!(">> Optimizing AST...");
@@ -146,7 +143,7 @@ fn main() {
                 eprintln!("{nar}");
                 std::process::exit(1);
             }
-            let ast = generate_ast(&mut file_contents, None, None);
+            let ast = generate_ast(&mut file_contents);
             let ast = optimize(&ast, optimizings);
             let mut machine = Machine::new(30_000);
             interpret(&ast, &mut machine);
