@@ -10,16 +10,16 @@ pub enum OptimizerStrategies {
     PureCode,
 }
 
-pub fn optimize(ast: &[Tokens], optimizers: Vec<OptimizerStrategies>) -> Vec<Tokens> {
+pub fn optimize(ast: &[Tokens], optimizers: &[OptimizerStrategies]) -> Vec<Tokens> {
     let mut new_ast: Vec<Tokens> = ast.to_owned();
     if optimizers.contains(&OptimizerStrategies::ClearLoop) {
-        new_ast = clear(new_ast);
+        new_ast = clear(&new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::DeadCode) {
         new_ast = clear_dead_code(&new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::Contractions) {
-        new_ast = contract(new_ast);
+        new_ast = contract(&new_ast);
     }
     if optimizers.contains(&OptimizerStrategies::PureCode) {
         new_ast = remove_pure(&new_ast);
@@ -27,7 +27,7 @@ pub fn optimize(ast: &[Tokens], optimizers: Vec<OptimizerStrategies>) -> Vec<Tok
     new_ast
 }
 
-fn contract(ast: Vec<Tokens>) -> Vec<Tokens> {
+fn contract(ast: &[Tokens]) -> Vec<Tokens> {
     let mut new_ast: Vec<Tokens> = vec![];
     let mut p = ast.iter().peekable();
     while let Some(op) = p.next() {
@@ -78,7 +78,7 @@ fn contract(ast: Vec<Tokens>) -> Vec<Tokens> {
             }
             OpCodes::Loop(x) => {
                 new_ast.push(Tokens::new(
-                    OpCodes::Loop(contract(x.to_vec())),
+                    OpCodes::Loop(contract(x)),
                     op.get_location().to_owned(),
                 ));
             }
@@ -134,7 +134,7 @@ fn clear_dead_code(ast: &[Tokens]) -> Vec<Tokens> {
     new_ast
 }
 
-fn clear(ast: Vec<Tokens>) -> Vec<Tokens> {
+fn clear(ast: &[Tokens]) -> Vec<Tokens> {
     let mut new_ast: Vec<Tokens> = vec![];
     for part in ast {
         match part.get_type() {
@@ -145,11 +145,11 @@ fn clear(ast: Vec<Tokens>) -> Vec<Tokens> {
                         // Only match on possible clear values
                         OpCodes::Add(_) | OpCodes::Sub(_) => new_ast
                             .push(Tokens::new(OpCodes::Clear, part.get_location().to_owned())),
-                        _ => new_ast.push(part),
+                        _ => new_ast.push(part.clone()),
                     }
                 } else {
                     new_ast.push(Tokens::new(
-                        OpCodes::Loop(clear(x.to_vec())),
+                        OpCodes::Loop(clear(x)),
                         part.get_location().to_owned(),
                     ));
                 }

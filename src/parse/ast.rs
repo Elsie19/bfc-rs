@@ -25,14 +25,8 @@ fn generate_ast_internal(
     column_num: Option<u32>,
 ) -> Vec<Tokens> {
     let mut out = vec![];
-    let mut line_num = match line_num {
-        Some(i) => i,
-        None => 1,
-    };
-    let mut column_num = match column_num {
-        Some(i) => i,
-        None => 0,
-    };
+    let mut line_num = line_num.unwrap_or(1);
+    let mut column_num = column_num.unwrap_or(0);
     while let Some(part) = program.next() {
         column_num += 1;
         match part {

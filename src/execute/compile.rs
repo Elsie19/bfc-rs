@@ -6,8 +6,8 @@ use qbe::*;
 pub fn compile(
     ast: &Vec<Tokens>,
     machine: &Machine,
-    debug: &bool,
-    file_location: String,
+    debug: bool,
+    file_location: &str,
 ) -> (String, bool) {
     let mut output_string = String::new();
 
@@ -36,7 +36,7 @@ pub fn compile(
         items: vec![(Type::Zero, DataItem::Const(machine.get_size() as u64))],
     });
     // Create `main`
-    if *debug {
+    if debug {
         output_string.push_str(&format!(r#"dbgfile "{}""#, file_location));
     }
     let mut func = Function::new(
@@ -89,14 +89,14 @@ pub fn compile(
 
     counter += 2;
 
-    generate_qbe(ast, &mut counter, &mut while_counter, *debug, &mut func);
+    generate_qbe(ast, &mut counter, &mut while_counter, debug, &mut func);
     func.add_instr(Instr::Ret(Some(Value::Const(0))));
     module.add_function(func);
     (
         if !output_string.is_empty() {
             output_string + "\n"
         } else {
-            "".to_string()
+            String::new()
         } + &module.to_string(),
         true,
     )

@@ -52,11 +52,12 @@ fn main() {
                             println!("\n# Example program:");
                             println!("    ++++++++[>++++[>++>+++>+++>+<<<<-]\n    >+>+>->>+[<]<-]>>.>---.+++++++..++\n    +.>>.<-.<.+++.------.--------.>>+.>++.");
                         }
-                        let ast = optimize(&generate_ast(&mut buffer.chars()), optimizings.clone());
+                        let ast =
+                            optimize(&generate_ast(&mut buffer.chars()), &optimizings.clone());
                         let mut machine = Machine::new(30_000);
                         interpret(&ast, &mut machine);
                     }
-                    Ok(Signal::CtrlC) | Ok(Signal::CtrlD) => {
+                    Ok(Signal::CtrlC | Signal::CtrlD) => {
                         println!("\nBye bye");
                         std::process::exit(130);
                     }
@@ -86,15 +87,14 @@ fn main() {
                 if !*emit_ir {
                     println!(">> Optimizing AST...");
                 }
-                ast = optimize(&ast, optimizings);
+                ast = optimize(&ast, &optimizings);
             }
             let file_name = rest;
             let machine = Machine::new(30_000);
             if !*emit_ir {
                 println!(">> Compiling to IR...");
             }
-            let (text, static_comp) =
-                compile(&ast, &machine, debug, rest.to_str().unwrap().to_string());
+            let (text, static_comp) = compile(&ast, &machine, *debug, rest.to_str().unwrap());
             if *emit_ir {
                 print!("{text}");
                 std::process::exit(0);
@@ -144,7 +144,7 @@ fn main() {
                 std::process::exit(1);
             }
             let ast = generate_ast(&mut file_contents);
-            let ast = optimize(&ast, optimizings);
+            let ast = optimize(&ast, &optimizings);
             let mut machine = Machine::new(30_000);
             interpret(&ast, &mut machine);
         }
