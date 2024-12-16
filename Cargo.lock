@@ -865,9 +865,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "wrapnum"
-version = "0.2.1"
+version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75a44ade23e218ec63ead21600f536ee3dd8297e22d5c243c949401bdd4aa318"
+checksum = "41759b896c868d3ca1f03951202f8c26485c923f2c90eb29b993fd7da763dbda"
 dependencies = [
  "num",
 ]

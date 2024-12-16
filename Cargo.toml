@@ -13,4 +13,4 @@ anyhow = "1.0.94"
 clap = { version = "4.5.23", features = ["derive"] }
 qbe = { git = "https://github.com/Elsie19/qbe-rs.git", branch = "main" }
 reedline = "0.37.0"
-wrapnum = "0.2.0"
+wrapnum = "0.3.1"
