@@ -1,26 +1,15 @@
 use std::io::{self, stdin, Read, Write};
+use wrapnum::{wrap, WrapNum};
 
 pub struct Machine {
-    ptr: usize,
+    ptr: WrapNum<usize>,
     tape: Vec<u32>,
-}
-
-fn wrapping_add_with_limit(value: usize, increment: usize, limit: usize) -> usize {
-    (value + increment) % limit
-}
-
-fn wrapping_sub_with_limit(value: usize, decrement: usize, limit: usize) -> usize {
-    if decrement > value {
-        (limit - (decrement - value)) % limit
-    } else {
-        (value - decrement) % limit
-    }
 }
 
 impl Machine {
     pub fn new(size: usize) -> Self {
         Machine {
-            ptr: 0,
+            ptr: wrap!(size),
             tape: vec![0; size],
         }
     }
@@ -42,11 +31,11 @@ impl Machine {
     }
 
     pub fn increment(&mut self, num: usize) {
-        self.ptr = wrapping_add_with_limit(self.ptr, num, self.tape.len());
+        self.ptr += num;
     }
 
     pub fn decrement(&mut self, num: usize) {
-        self.ptr = wrapping_sub_with_limit(self.ptr, num, self.tape.len());
+        self.ptr -= num;
     }
 
     pub fn input(&mut self) {
