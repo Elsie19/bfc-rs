@@ -14,13 +14,8 @@ pub fn compile(
     // If so, let's just create a silly little return
     if ast.is_empty() {
         let mut module = Module::new();
-        let mut func = Function::new(
-            Linkage::public(),
-            "main".to_owned(),
-            Vec::new(),
-            Some(Type::Word),
-        );
-        func.add_block("start".to_owned());
+        let mut func = Function::new(Linkage::public(), "main", Vec::new(), Some(Type::Word));
+        func.add_block("start");
         func.add_instr(Instr::Ret(Some(Value::Const(0))));
         module.add_function(func);
         return (module.to_string(), false);
@@ -85,6 +80,7 @@ pub fn compile(
             (Type::Long, Value::Temporary(format_counter(counter + 1))),
             (Type::Long, Value::Temporary(format_counter(counter + 2))),
         ],
+        None,
     ));
 
     counter += 2;
@@ -289,6 +285,7 @@ fn generate_qbe(
                     Instr::Call(
                         "putchar".to_owned(),
                         vec![(Type::Word, Value::Temporary(format_counter(*counter + 2)))],
+                        None,
                     ),
                 );
                 *counter += 3;
@@ -303,7 +300,7 @@ fn generate_qbe(
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 1)),
                     Type::Word,
-                    Instr::Call("getchar".to_owned(), vec![]),
+                    Instr::Call("getchar".to_owned(), vec![], None),
                 );
                 func.assign_instr(
                     Value::Temporary(format_counter(*counter + 2)),

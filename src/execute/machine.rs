@@ -49,7 +49,7 @@ impl Machine {
 
     pub fn output(&self) {
         print!("{}", char::from_u32(self.tape[self.ptr]).unwrap());
-        io::stdout().flush().unwrap();
+        let _ = io::stdout().flush();
     }
 
     pub fn get_byte(&self) -> u32 {
