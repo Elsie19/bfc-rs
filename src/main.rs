@@ -13,11 +13,8 @@ use args::args::Args;
 use args::args::Commands;
 use clap::Parser;
 use execute::compile::compile;
-use execute::interpret::interpret;
-use execute::machine::Machine;
 use parse::ast::{balance_brackets, generate_ast};
 use parse::optimizer::{optimize, OptimizerStrategies};
-use reedline::{DefaultPrompt, Reedline, Signal};
 
 fn main() {
     let args = Args::parse();
@@ -29,44 +26,6 @@ fn main() {
     ];
 
     match &args.cmd {
-        Commands::Shell {} => {
-            let mut line_editor = Reedline::create();
-            let prompt = DefaultPrompt::new(
-                reedline::DefaultPromptSegment::Empty,
-                reedline::DefaultPromptSegment::CurrentDateTime,
-            );
-            loop {
-                let sig = line_editor.read_line(&prompt);
-                match sig {
-                    Ok(Signal::Success(buffer)) => {
-                        if buffer.to_lowercase() == "help" {
-                            println!("\n# Brainfuck basics:");
-                            println!("    >  Increment data pointer by one");
-                            println!("    <  Decrement data pointer by one");
-                            println!("    +  Increment byte at data pointer by one");
-                            println!("    -  Decrement byte at data pointer by one");
-                            println!("    .  Output byte at data pointer");
-                            println!("    ,  Accent one byte, store it at the data pointer");
-                            println!("    [  If byte at data pointer is zero, move to ']'");
-                            println!("    ]  If byte at data pointer is nonzero, move to '['");
-                            println!("\n# Example program:");
-                            println!("    ++++++++[>++++[>++>+++>+++>+<<<<-]\n    >+>+>->>+[<]<-]>>.>---.+++++++..++\n    +.>>.<-.<.+++.------.--------.>>+.>++.");
-                        }
-                        let ast =
-                            optimize(&generate_ast(&mut buffer.chars()), &optimizings.clone());
-                        let mut machine = Machine::new(30_000);
-                        interpret(&ast, &mut machine);
-                    }
-                    Ok(Signal::CtrlC | Signal::CtrlD) => {
-                        println!("\nBye bye");
-                        std::process::exit(130);
-                    }
-                    x => {
-                        println!("Event: {x:?}");
-                    }
-                }
-            }
-        }
         Commands::Compile {
             emit_ir,
             debug,
@@ -90,11 +49,10 @@ fn main() {
                 ast = optimize(&ast, &optimizings);
             }
             let file_name = rest;
-            let machine = Machine::new(30_000);
             if !*emit_ir {
                 println!(">> Compiling to IR...");
             }
-            let (text, static_comp) = compile(&ast, &machine, *debug, rest.to_str().unwrap());
+            let (text, static_comp) = compile(&ast, *debug, rest.to_str().unwrap());
             if *emit_ir {
                 print!("{text}");
                 std::process::exit(0);
@@ -135,18 +93,6 @@ fn main() {
                 .expect("Could not run cc");
             fs::remove_file(tmp_path).unwrap();
             fs::remove_file(s_path).unwrap();
-        }
-        Commands::Interpret { rest } => {
-            let file_contents = fs::read_to_string(rest).expect("Could not read file");
-            let mut file_contents = file_contents.chars();
-            if let Err(nar) = balance_brackets(&file_contents) {
-                eprintln!("{nar}");
-                std::process::exit(1);
-            }
-            let ast = generate_ast(&mut file_contents);
-            let ast = optimize(&ast, &optimizings);
-            let mut machine = Machine::new(30_000);
-            interpret(&ast, &mut machine);
         }
     }
 }

@@ -30,16 +30,4 @@ pub enum Commands {
         #[clap(required = true)]
         rest: PathBuf,
     },
-
-    /// Interpret program
-    #[clap(alias = "i")]
-    Interpret {
-        /// Input file
-        #[clap(required = true)]
-        rest: PathBuf,
-    },
-
-    /// Launch shell
-    #[clap(alias = "s")]
-    Shell {},
 }

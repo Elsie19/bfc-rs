@@ -1,14 +1,8 @@
-use crate::execute::machine::Machine;
 use crate::parse::opcodes::{OpCodes, Tokens};
 use qbe::*;
 
 /// Return our QBE IR, and also a bool if this should be statically compiled
-pub fn compile(
-    ast: &Vec<Tokens>,
-    machine: &Machine,
-    debug: bool,
-    file_location: &str,
-) -> (String, bool) {
+pub fn compile(ast: &Vec<Tokens>, debug: bool, file_location: &str) -> (String, bool) {
     let mut output_string = String::new();
 
     // If so, let's just create a silly little return
@@ -28,7 +22,7 @@ pub fn compile(
         linkage: Linkage::private(),
         name: "tape".into(),
         align: Some(8),
-        items: vec![(Type::Zero, DataItem::Const(machine.get_size() as u64))],
+        items: vec![(Type::Zero, DataItem::Const(30_000))],
     });
     // Create `main`
     if debug {
