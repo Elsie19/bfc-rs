@@ -14,3 +14,4 @@ anyhow = "1.0.82"
 clap = { version = "4.5.4", features = ["derive"] }
 qbe = { git = "https://github.com/Elsie19/qbe-rs.git", branch = "add-conversions" }
 reedline = "0.31.0"
+wrapnum = "0.3.2"
